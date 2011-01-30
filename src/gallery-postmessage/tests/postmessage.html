@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>postMessage Tests</title>
+	</head>
+	
+	<body class="yui3-skin-sam">
+		
+		<h1><code>postMessage</code> Tests</h1>
+		
+		<script src="../../../../yui3/build/yui/yui-min.js"></script>
+		<script>
+			YUI({
+			
+				allowRollup	: false,
+				modules		: {
+					'gallery-postmessage' : {
+						fullpath	: '../../../build/gallery-postmessage/gallery-postmessage-debug.js',
+						requires	: ['event-synthetic', 'history-hash', 'json']
+					}
+				}
+				
+			}).use('console', 'gallery-postmessage', function(Y){
+				
+				var console = new Y.Console({ newestOnTop: false }).render();
+				
+				Y.one('win').on('message', function(e){
+					Y.log(e.data);
+				});
+				
+				Y.postMessage(Y.config.window, ['foo', 'bar']);
+				
+			});
+		</script>
+		
+	</body>
+</html>
