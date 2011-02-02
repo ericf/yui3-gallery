@@ -29,7 +29,8 @@
 					Y.log(e.data);
 				});
 				
-				Y.postMessage(Y.one('win'), ['foo', 'bar']);
+				Y.postMessage(Y.config.win, ['foo', 'bar']);
+				Y.postMessage(Y.config.win, 'just text');
 				
 			});
 		</script>

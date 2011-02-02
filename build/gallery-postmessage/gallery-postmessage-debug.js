@@ -39,7 +39,7 @@ Y.Event.define('message', {
 		
 		var win = Y.one('win');
 		
-		if (node !== win) { return; }
+		if ( ! (node === win || node === Y.config.win)) { return; }
 		
 		function handleMessage (e) {
 			
