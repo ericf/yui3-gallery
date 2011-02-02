@@ -7,6 +7,7 @@ YUI.add('gallery-postmessage', function(Y) {
 var YLang				= Y.Lang,
 	isValue				= YLang.isValue,
 	isString			= YLang.isString,
+	isFunction			= YLang.isFunction,
 	
 	JSON				= Y.JSON,
 	stringify			= JSON.stringify,
@@ -31,14 +32,14 @@ Y.Event.define('message', {
 		
 		var i = isString(args[2]) ? 2 : 3;
 		
-		return { origin: isString(args[i]) ? args.splice(i, 1)[0] : null };
+		return { origin: isString(args[i]) || isFunction(args[i]) ? args.splice(i, 1)[0] : null };
 	},
 	
 	on : function (node, subscriber, notifier) {
 		
 		var win = Y.one('win');
 		
-		if ( node !== win) { return; }
+		if (node !== win) { return; }
 		
 		function handleMessage (e) {
 			
@@ -51,7 +52,7 @@ Y.Event.define('message', {
 				data = parse(data);
 			} catch (error) {}
 				
-			if ( ! targetOrigin || targetOrigin === messageOrigin) {
+			if (isFunction(targetOrigin) ? targetOrigin(messageOrigin) : ( ! targetOrigin || targetOrigin === messageOrigin)) {
 				notifier.fire({
 					origin	: messageOrigin,
 					data	: data

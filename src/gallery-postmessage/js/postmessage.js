@@ -37,7 +37,7 @@ Y.Event.define('message', {
 		
 		var win = Y.one('win');
 		
-		if ( node !== win) { return; }
+		if (node !== win) { return; }
 		
 		function handleMessage (e) {
 			
@@ -50,7 +50,7 @@ Y.Event.define('message', {
 				data = parse(data);
 			} catch (error) {}
 				
-			if ( isFunction(targetOrigin) ? targetOrigin(messageOrigin) : ( ! targetOrigin || targetOrigin === messageOrigin)) {
+			if (isFunction(targetOrigin) ? targetOrigin(messageOrigin) : ( ! targetOrigin || targetOrigin === messageOrigin)) {
 				notifier.fire({
 					origin	: messageOrigin,
 					data	: data
