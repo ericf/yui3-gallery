@@ -288,4 +288,4 @@ Y._Markout	= Y.Markout;
 Y.Markout	= MarkoutNode;
 
 
-}, '@VERSION@' ,{requires:['dom-style','selector','node-base']});
+}, 'gallery-2011.02.02-21-07' ,{requires:['dom-style','selector','node-base']});
