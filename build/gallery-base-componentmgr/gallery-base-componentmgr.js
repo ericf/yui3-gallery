@@ -96,7 +96,8 @@ YUI.add('gallery-base-componentmgr', function(Y) {
 				});
 			}
 			
-			Y.before(this._destroyComponents, this.constructor.prototype, 'destructor', this);
+//			this.after('destroy', this._destroyComponents);
+			Y.before(this._destroyComponents, this, '_destroyHierarchy', this);
 		},
 		
 		// *** Public Methods *** //
@@ -149,7 +150,7 @@ YUI.add('gallery-base-componentmgr', function(Y) {
 		
 		/**
 		 * Destroys a component or set of components by string name.
-		 * This will call the component???s configured destructor fn (preferred), or
+		 * This will call the component’s configured destructor fn (preferred), or
 		 * if the instance has a <code>destroy</code> method that will be used by convention.
 		 * 
 		 * @method destroyComponent
@@ -330,7 +331,17 @@ YUI.add('gallery-base-componentmgr', function(Y) {
 		
 	};
 	
+	/**
+	 * Alias for useComponent
+	 * 
+	 * @method use
+	 * @alias useComponent
+	 */
+	ComponentMgr.prototype.use = ComponentMgr.prototype.useComponent;
+	
+	// *** Namespace *** //
+	
 	Y.BaseComponentMgr = ComponentMgr;
 
 
-}, 'gallery-2011.01.26-20-33' ,{requires:['base-base', 'collection']});
+}, '@VERSION@' ,{requires:['base-base', 'collection']});
