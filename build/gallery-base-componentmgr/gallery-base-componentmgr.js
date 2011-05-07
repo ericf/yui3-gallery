@@ -150,7 +150,7 @@ YUI.add('gallery-base-componentmgr', function(Y) {
 		
 		/**
 		 * Destroys a component or set of components by string name.
-		 * This will call the component’s configured destructor fn (preferred), or
+		 * This will call the component???s configured destructor fn (preferred), or
 		 * if the instance has a <code>destroy</code> method that will be used by convention.
 		 * 
 		 * @method destroyComponent
@@ -344,4 +344,4 @@ YUI.add('gallery-base-componentmgr', function(Y) {
 	Y.BaseComponentMgr = ComponentMgr;
 
 
-}, '@VERSION@' ,{requires:['base-base', 'collection']});
+}, 'gallery-2011.05.04-20-03' ,{requires:['base-base', 'collection']});

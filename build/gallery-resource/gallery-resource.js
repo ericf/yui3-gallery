@@ -1,7 +1,7 @@
 YUI.add('gallery-resource', function(Y) {
 
 	/**
-	 * Resource — A RESTful wrapper around Y.io
+	 * Resource ??? A RESTful wrapper around Y.io
 	 * 
 	 * Oddnut Software
 	 * Copyright (c) 2009-2011 Eric Ferraiuolo - http://eric.ferraiuolo.name
@@ -324,4 +324,4 @@ YUI.add('gallery-resource', function(Y) {
 	Y.Resource = Resource;
 
 
-}, '@VERSION@' ,{requires:['base-base', 'io-base', 'querystring-stringify-simple', 'substitute', 'json']});
+}, 'gallery-2011.05.04-20-03' ,{requires:['base-base', 'io-base', 'querystring-stringify-simple', 'substitute', 'json']});

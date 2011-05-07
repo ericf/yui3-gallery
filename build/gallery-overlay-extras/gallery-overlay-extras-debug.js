@@ -576,4 +576,4 @@ YUI.add('gallery-overlay-extras', function(Y) {
 	Y.Plugin.OverlayPointer		= OverlayPointer;
 
 
-}, '@VERSION@' ,{supersedes:['gallery-overlay-modal'], requires:['overlay','plugin','event-resize','gallery-outside-events']});
+}, 'gallery-2011.05.04-20-03' ,{supersedes:['gallery-overlay-modal'], requires:['overlay','plugin','event-resize','gallery-outside-events']});
