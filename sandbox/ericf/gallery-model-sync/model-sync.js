@@ -2,8 +2,8 @@
 An Extention which provides a RESTful HTTP sync implementation that can be mixed
 into a Model or ModelList subclass.
 
-If you're communication with the server is done via JSON, the only the `root`
-and `url` prototype properties will need to be assigned.
+If the communication with the server is done via JSON, only the `root` and `url`
+prototype properties will need to be assigned to match your server's URL space.
 
 @module model-sync
 
@@ -34,7 +34,11 @@ ModelSync.HTTP_METHODS = {
 ModelSync.prototype = {
 
     /**
-    A String
+    A String which represents the root or collection part of the URL space which
+    relates to this Model/ModelList class; **this should be overriden**.
+
+    @example
+        '/users/'
 
     @property root
     @type String
@@ -43,9 +47,8 @@ ModelSync.prototype = {
     root : '',
 
     /**
-    A String or Function which resolves to the URL of the Model instance.
-
-    **This property should be overriden**; otherwise no requests will be made.
+    A String or Function which resolves to the URL of the Model instance;
+    **this should be overriden**.
 
     if the `url` property is a Function, it should return the String that should
     be used as the URL. The Function will be called before each request. If the
@@ -110,16 +113,21 @@ ModelSync.prototype = {
     sync : function (action, options, callback) {
         options || (options = {});
 
-        var url = this._getUrl(action, options),
+        var url     = this._getUrl(action, options),
+            method  = ModelSync.HTTP_METHODS[action],
+            headers = Y.merge(this.headers, options.headers),
             entity;
 
-        if (action === 'create' || action === 'update') {
+        if (method === 'POST' || method === 'PUT') {
             entity = Y.JSON.stringify(this);
+        } else {
+            // no content is being sent
+            delete headers['Content-Type'];
         }
 
         Y.io(url, {
-            method  : ModelSync.HTTP_METHODS[action],
-            headers : Y.merge(this.headers, options.headers),
+            method  : method,
+            headers : headers,
             data    : entitiy,
             on      : {
                 success : function (txId, res) {
@@ -137,6 +145,22 @@ ModelSync.prototype = {
         });
     },
 
+    /**
+    Returns the URL for the request based on the `action` and current state of
+    the `root` and `url` properties.
+
+    @method _getUrl
+    @param {String} action Sync action to perform. May be one of the following:
+
+      * create: Store a newly-created model for the first time.
+      * delete: Delete an existing model.
+      * read  : Load an existing model.
+      * update: Update an existing model.
+
+    @param {Object} [options] Sync options. It's up to the custom sync
+      implementation to determine what options it supports or requires, if any.
+    @protected
+    **/
     _getUrl : function (action, options) {
         var root    = this.root,
             url     = this.url;
@@ -157,3 +181,5 @@ ModelSync.prototype = {
     }
 
 };
+
+Y.ModelSync = ModelSync;
