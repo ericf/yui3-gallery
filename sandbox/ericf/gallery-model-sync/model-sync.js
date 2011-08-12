@@ -19,7 +19,6 @@ var ModelSync,
 
     Lang        = Y.Lang,
     sub         = Lang.sub,
-    isString    = Lang.isString,
     isFunction  = Lang.isFunction;
 
 ModelSync = function(){};
@@ -35,7 +34,10 @@ ModelSync.prototype = {
 
     /**
     A String which represents the root or collection part of the URL space which
-    relates to this Model/ModelList class; **this should be overriden**.
+    relates to this Model/ModelList class. The `root` and `url` are combined
+    to form the request URL to the server.
+
+    This property should probably be overriden for a Model subclass.
 
     @example
         '/users/'
@@ -47,24 +49,31 @@ ModelSync.prototype = {
     root : '',
 
     /**
-    A String or Function which resolves to the URL of the Model instance;
-    **this should be overriden**.
+    A String or Function which resolves to the URL of the Model instance. The
+    default implementation combines the value of `root` with Model's `id`
+    Attribute.
 
-    if the `url` property is a Function, it should return the String that should
+    If the `url` property is a Function, it should return the String that should
     be used as the URL. The Function will be called before each request. If the
     `url` property is a String, it will be processed by `Y.Lang.sub()`; this is
-    useful when the URLs for a Model type match a specific pattern:
+    useful when the URLs for a Model type match a specific pattern and can use
+    simple replacement tokens:
 
     @example
         '/user/{id}/'
 
-    @TODO Should this match the spec for a Controller's route?
+    @TODO: How API docs work when this could be a String or Function?
 
-    @property url
-    @type String|Function
-    @default ''
+    @method url
+    @return {String} URL to use make XHR request to the server.
     **/
-    url : '',
+    url : function () {
+        if (this instanceof Y.ModelList || this.isNew()) {
+            return this.root;
+        }
+
+        return this._joinUrl(this.getAsUrl('id') + '/');
+    },
 
     /**
     A hash of HTTP headers which will be used for each XHR request.
@@ -113,7 +122,7 @@ ModelSync.prototype = {
     sync : function (action, options, callback) {
         options || (options = {});
 
-        var url     = this._getUrl(action, options),
+        var url     = this._getUrl(),
             method  = ModelSync.HTTP_METHODS[action],
             headers = Y.merge(this.headers, options.headers),
             entity;
@@ -146,39 +155,62 @@ ModelSync.prototype = {
     },
 
     /**
-    Returns the URL for the request based on the `action` and current state of
-    the `root` and `url` properties.
+    Helper method to return the URL to be used to make the XHR to the server.
 
     @method _getUrl
-    @param {String} action Sync action to perform. May be one of the following:
-
-      * create: Store a newly-created model for the first time.
-      * delete: Delete an existing model.
-      * read  : Load an existing model.
-      * update: Update an existing model.
-
-    @param {Object} [options] Sync options. It's up to the custom sync
-      implementation to determine what options it supports or requires, if any.
     @protected
     **/
-    _getUrl : function (action, options) {
-        var root    = this.root,
-            url     = this.url;
+    _getUrl : function () {
+        var url = this.url,
+            data;
 
         if (isFunction(url)) {
-            return url(action, options);
-        }
-
-        if (action === 'create') {
-            return this.root;
+            return url();
         }
 
         if (this instanceof Y.Model) {
-            return ( root + sub(url, this.toJSON()) );
+            data = this.toJSON();
+            Y.Object.each(data, function (v, k) {
+                // replace the value with URL-encoded ones before we substitute.
+                data[k] = this.getAsUrl(k);
+            }, this);
+
+            // substitute place-holders with the data values.
+            url = sub(url, data);
         }
 
-        return url || root;
-    }
+        return this._joinUrl(url);
+    },
+
+    /**
+    Joins the `root` URL to the specified _url_, normalizing leading/trailing
+    `/` characters.
+
+    @example
+        model.root = '/foo'
+        model._joinURL('bar');  // => '/foo/bar'
+        model._joinURL('/bar'); // => '/foo/bar'
+
+        model.root = '/foo/'
+        model._joinURL('bar');  // => '/foo/bar'
+        model._joinURL('/bar'); // => '/foo/bar'
+
+    @method _joinURL
+    @param {String} url URL to append to the `root` URL.
+    @return {String} Joined URL.
+    @protected
+    **/
+    _joinURL: function (url) {
+        var root = this.root;
+
+        if (url.charAt(0) === '/') {
+            url = url.substring(1);
+        }
+
+        return root && root.charAt(root.length - 1) === '/' ?
+                root + url :
+                root + '/' + url;
+    },
 
 };
 
