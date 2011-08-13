@@ -2,27 +2,24 @@
 An Extention which provides a RESTful HTTP sync implementation that can be mixed
 into a Model or ModelList subclass.
 
-If the communication with the server is done via JSON, only the `root` and `url`
-prototype properties will need to be assigned to match your server's URL space.
-
-@module model-sync
-
-@TODO: Rename to something like ModelRESTSync? ModelHTTPSync? RESTSync?
+@module gallery-model-sync-rest
 **/
 
-var ModelSync,
+var Rest,
 
     Lang        = Y.Lang,
     sub         = Lang.sub,
+    isString    = Lang.isString,
+    isNumber    = Lang.isNumber,
     isFunction  = Lang.isFunction;
 
 /**
 Provides…
 
-@class ModelSync
+@class ModelSync.Rest
 @extension
 **/
-ModelSync = function(){};
+Rest = function(){};
 
 /**
 Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
@@ -31,14 +28,29 @@ Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
 @type Object
 @static
 **/
-ModelSync.HTTP_METHODS = {
+Rest.HTTP_METHODS = {
     'create': 'POST',
     'read'  : 'GET',
     'update': 'PUT',
     'delete': 'DELETE'
 };
 
-ModelSync.prototype = {
+/**
+Static flag to use the HTTP POST method instead of PUT or DELETE.
+
+If the server-side HTTP framework isn't RESTful, setting this flag to `ture`
+will cause all PUT and DELETE requests to instead use the POST HTTP method, and
+add a X-HTTP-Method-Override HTTP header with the value of the method type which
+was overriden.
+
+@property EMULATE_HTTP
+@type Boolean
+@default false
+@static
+**/
+Rest.EMULATE_HTTP = false;
+
+Rest.prototype = {
 
     /**
     A String which represents the root or collection part of the URL space which
@@ -51,7 +63,7 @@ ModelSync.prototype = {
     if the `root` does not end with a slash, neither will the XHR URLs.
 
     @example
-        var User = Y.Base.create('user', Y.Model, [Y.ModelSync], {
+        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
             root : '/user/'
         }, {
             ATTRS : {
@@ -90,6 +102,10 @@ ModelSync.prototype = {
     @example
         '/user/{id}/'
 
+    **Note:** Only String and Number ATTR values will be substituded; do not
+    expect something fancy to happen with Object, Array, or Boolean values, they
+    will simply be ingored.
+
     When subclassing Y.Model, you will probably be able to rely on the default
     implementation which works in conjunction with the `root` property. Your
     URL-space may have plural root or collection URLs, while the specific
@@ -98,7 +114,7 @@ ModelSync.prototype = {
     properties like this:
 
     @example
-        var User = Y.Base.create('user', Y.Model, [Y.ModelSync], {
+        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
             root : '/users',
             url  : '/user/{id}'
         }, {
@@ -153,7 +169,7 @@ ModelSync.prototype = {
     **/
     headers : {
         'Accept'        : 'application/json',
-        'Content-Type'  ; 'application/json'
+        'Content-Type'  : 'application/json'
     },
 
     /**
@@ -186,7 +202,7 @@ ModelSync.prototype = {
         options || (options = {});
 
         var url     = this._getUrl(),
-            method  = ModelSync.HTTP_METHODS[action],
+            method  = Rest.HTTP_METHODS[action],
             headers = Y.merge(this.headers, options.headers),
             entity;
 
@@ -197,13 +213,22 @@ ModelSync.prototype = {
             delete headers['Content-Type'];
         }
 
+        if (Rest.EMULATE_HTTP && (method === 'PUT' || method === 'DELETE')) {
+            // pass along original method type in the headers
+            headers['X-HTTP-Method-Override'] = method;
+            // fallback to POST method type
+            method = 'POST';
+        }
+
         Y.io(url, {
             method  : method,
             headers : headers,
-            data    : entitiy,
+            data    : entity,
             on      : {
                 success : function (txId, res) {
-                    isFunction(callback) && callback(null, res.responseText);
+                    if (isFunction(callback)) {
+                        callback(null, res.responseText);
+                    }
                 },
                 failure : function (txId, res) {
                     if (isFunction(callback)) {
@@ -233,13 +258,15 @@ ModelSync.prototype = {
         }
 
         if (this instanceof Y.Model) {
-            data = this.toJSON();
-            Y.Object.each(data, function (v, k) {
-                // replace the value with URL-encoded ones before we substitute.
-                data[k] = this.getAsUrl(k);
-            }, this);
+            data = {};
+            Y.Object.each(this.toJSON(), function (v, k) {
+                if (isString(v) || isNumber(v)) {
+                    // URL-encode any String or Number values.
+                    data[k] = encodeURIComponent(v);
+                }
+            });
 
-            // substitute place-holders with the data values.
+            // substitute placeholders with the data values.
             url = sub(url, data);
         }
 
@@ -278,9 +305,9 @@ ModelSync.prototype = {
         return root && root.charAt(root.length - 1) === '/' ?
                 root + url :
                 root + '/' + url;
-    },
+    }
 
 };
 
 // Namespace
-Y.ModelSync = ModelSync;
+Y.namespace('ModelSync.Rest') = Rest;
