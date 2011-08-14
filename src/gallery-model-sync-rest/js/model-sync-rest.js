@@ -343,4 +343,4 @@ Rest.prototype = {
 
 // *** Namespace *** //
 
-Y.namespace('ModelSync.Rest') = Rest;
+Y.namespace('ModelSync').Rest = Rest;
