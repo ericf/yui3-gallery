@@ -36,13 +36,14 @@ var Rest,
 
     Lang        = Y.Lang,
     sub         = Lang.sub,
+    isValue     = Lang.isValue,
     isString    = Lang.isString,
     isNumber    = Lang.isNumber,
     isFunction  = Lang.isFunction;
 
 // *** Rest *** //
 
-Rest = function () {};
+Rest = function (config) {};
 
 /**
 Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
@@ -200,6 +201,13 @@ Rest.prototype = {
         return this._joinUrl(url);
     },
 
+    // *** Lifecycle Methods *** //
+
+    initializer : function (config) {
+        config || (config = {});
+        isValue(config.url) && (this.url = config.url);
+    },
+
     // *** Public Methods *** //
 
     /**
@@ -287,7 +295,7 @@ Rest.prototype = {
             data;
 
         if (isFunction(url)) {
-            return url();
+            return this.url();
         }
 
         if (this instanceof Y.Model) {
