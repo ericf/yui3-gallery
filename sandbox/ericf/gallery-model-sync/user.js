@@ -1,5 +1,5 @@
 
-var User = Y.Base.create('user', Y.Model, [Y.ModelSync], {
+var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
     root    : '/users/',
     url     : '/user/{id}/'
 }, {
@@ -10,7 +10,7 @@ var User = Y.Base.create('user', Y.Model, [Y.ModelSync], {
     }
 });
 
-var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync], {
+var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.Rest], {
     model   : User,
     url     : '/users/'
 });
