@@ -43,7 +43,7 @@ var Rest,
 
 // *** Rest *** //
 
-Rest = function (config) {};
+Rest = function () {};
 
 /**
 Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
@@ -154,10 +154,14 @@ Rest.prototype = {
     Boolean values; they will simply be ignored.
 
     When sub-classing Y.Model, you will probably be able to rely on the default
-    implementation which works in conjunction with the `root` property. Your
-    URL-space may have plural root or collection URLs, while the specific item
-    resources are under a singular name, e.g. /users (plural) and /user/123
-    (singular); for this you'll probably want to configure the `root` and `url`
+    implementation of `url()` which works in conjunction with the `root`
+    property and whether the Model instance is new or not (i.e. has an `id`). If
+    the `root` property ends with a trailing-slash, the generated URL for the
+    specific Model instance will also end with a trailing-slash.
+
+    If your URL-space has plural root or collection URLs, while the specific
+    item resources are under a singular name, e.g. /users (plural) and /user/123
+    (singular); you'll probably want to configure the `root` and `url`
     properties like this:
 
     @example
@@ -171,10 +175,10 @@ Rest.prototype = {
         });
 
         var myUser = new User({ id: '123' });
-        myUser.load(); // will GET the User data from: /user/123
+        myUser.load(); // Will GET the User data from: /user/123
 
         var newUser = new User({ name: 'Eric Ferraiuolo' });
-        newUser.save(); // will POST the User data to: /users
+        newUser.save(); // Will POST the User data to: /users
 
     When sub-classing Y.ModelList, you probably just need to specify a simple
     String for the `url` property and leave `root` to be the default value.
@@ -192,13 +196,13 @@ Rest.prototype = {
             return root;
         }
 
-        url = this.getAsUrl('id');
+        url = this.getAsURL('id');
         if (root && root.charAt(root.length - 1) === '/') {
             // Add trailing-slash because root has a trailing-slash.
             url += '/';
         }
 
-        return this._joinUrl(url);
+        return this._joinURL(url);
     },
 
     // *** Lifecycle Methods *** //
@@ -238,7 +242,7 @@ Rest.prototype = {
     sync : function (action, options, callback) {
         options || (options = {});
 
-        var url     = this._getUrl(),
+        var url     = this._getURL(),
             method  = Rest.HTTP_METHODS[action],
             headers = Y.merge(this.headers, options.headers),
             entity;
@@ -286,11 +290,11 @@ Rest.prototype = {
 
     This method correctly handles variations of the `url` property/method.
 
-    @method _getUrl
+    @method _getURL
     @return {String} the URL for the XHR
     @protected
     **/
-    _getUrl : function () {
+    _getURL : function () {
         var url = this.url,
             data;
 
