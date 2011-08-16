@@ -60,6 +60,37 @@ Rest.HTTP_METHODS = {
 };
 
 /**
+Default headers used with all XHRs.
+
+These headers will be merged with any request-specific headers, and the request-
+specific headers will take presidence.
+
+@property HTTP_HEADERS
+@type Object
+@static
+@default
+    {
+        'Accept'        : 'application/json',
+        'Content-Type'  : 'application/json'
+    }
+**/
+Rest.HTTP_HEADERS = {
+    'Accept'        : 'application/json',
+    'Content-Type'  : 'application/json'
+};
+
+/**
+Default number of milliseconds before the XHR will timeout/abort.
+
+This can be overridden on a per-request basis.
+
+@property HTTP_TIMEOUT
+@type Number
+@static
+@default undefined
+**/
+
+/**
 Static flag to use the HTTP POST method instead of PUT or DELETE.
 
 If the server-side HTTP framework isn't RESTful, setting this flag to `true`
@@ -79,24 +110,32 @@ Rest.prototype = {
     // *** Public Properties *** //
 
     /**
-    A hash of HTTP headers which will be used with each XHR.
+    Y.IO instance object used to make each XHR.
 
-    These headers are considered the default headers used for each request, but
-    they are merged with any request-specific headers which will take precedence
-    over these defaults.
+    By default each Model/ModelList instance will receive it's own IO instance
+    at initialization time, and be added as a event bubble target for all of
+    it's IO events— allowing this type of pattern:
 
-    @property headers
-    @type Object
-    @default
-        {
-            'Accept'        : 'application/json',
-            'Content-Type'  ; 'application/json'
-        }
+     @example
+        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
+            root : '/user'
+        });
+
+        var myUser = new User({ id: '123' });
+        myUser.on('io:start', function (e) {
+            console.log('Starting IO transaction.');
+        });
+        myUser.load(); // Causes `io:start` to fire.
+
+    Alternately a Y.IO instance can be set on a Model/ModelList subclass'
+    prototype and the same IO instance will be used by every instance of that
+    class for every XHR. In this case, the Model/ModelList instances are _not_
+    setup to be bubble targets for IO events; that would be noisy.
+
+    @property io
+    @type IO
+    @default undefined
     **/
-    headers : {
-        'Accept'        : 'application/json',
-        'Content-Type'  : 'application/json'
-    },
 
     /**
     A String which represents the root or collection part of the URL space which
@@ -210,6 +249,14 @@ Rest.prototype = {
     initializer : function (config) {
         config || (config = {});
         isValue(config.url) && (this.url = config.url);
+
+        // Check for IO instance on the prototype.
+        if ( ! (this.io instanceof Y.IO)) {
+            // Setup a new IO instance if there is not one on the prototype.
+            this.io = new Y.IO({ bubbles: true });
+            // Model/ModelList instance as a bubble target for it's IO events.
+            this.io.addTarget(this);
+        }
     },
 
     // *** Public Methods *** //
@@ -231,6 +278,8 @@ Rest.prototype = {
     @param {Object} [options] Sync options.
       @param {Object} [options.headers] The HTTP headers to mix with the default
         headers specified by the `headers` property.
+      @param {Number} [options.timeout] The number of milliseconds before the
+        request will timeout and be aborted.
     @param {callback} [callback] Called when the sync operation finishes.
       @param {Error|null} callback.err If an error occurred, this parameter will
         contain the error. If the sync operation succeeded, _err_ will be
@@ -244,9 +293,11 @@ Rest.prototype = {
 
         var url     = this._getURL(),
             method  = Rest.HTTP_METHODS[action],
-            headers = Y.merge(this.headers, options.headers),
+            headers = Y.merge(Rest.HTTP_HEADERS, options.headers),
+            timeout = options.timeout || Rest.HTTP_TIMEOUT,
             entity;
 
+        // Prepare the content if we are sending data to the server.
         if (method === 'POST' || method === 'PUT') {
             entity = Y.JSON.stringify(this);
         } else {
@@ -254,6 +305,7 @@ Rest.prototype = {
             delete headers['Content-Type'];
         }
 
+        // Setup HTTP emulation for older servers if we need it.
         if (Rest.EMULATE_HTTP && (method === 'PUT' || method === 'DELETE')) {
             // Pass along original method type in the headers.
             headers['X-HTTP-Method-Override'] = method;
@@ -261,10 +313,12 @@ Rest.prototype = {
             method = 'POST';
         }
 
-        Y.io(url, {
+        // Setup and send the IO request.
+        this.io.send(url, {
             method  : method,
             headers : headers,
             data    : entity,
+            timeout : timeout,
             on      : {
                 success : function (txId, res) {
                     if (isFunction(callback)) {
@@ -322,7 +376,7 @@ Rest.prototype = {
     Joins the `root` URL to the specified _url_, normalizing leading/trailing
     `/` characters.
 
-    Copied from `Y.Controller`: by Ryan Grove (Yahoo! Inc.)
+    Copied from YUI 3's `Y.Controller` Class: by Ryan Grove (Yahoo! Inc.)
     https://github.com/yui/yui3/blob/master/src/app/js/controller.js
 
     @example
