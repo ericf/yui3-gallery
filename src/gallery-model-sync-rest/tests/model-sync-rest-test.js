@@ -31,46 +31,6 @@ suite.add(new Y.Test.Case({
 
         var modelList = new this.TestModelList({ url: '/model' });
         Assert.areSame('/model', modelList.url);
-    },
-
-    'initializer should set a new IO instance on the `io` property' : function () {
-        var someIO = new Y.IO();
-
-        var model = new this.TestModel();
-        Assert.isTrue(model.io instanceof Y.IO);
-        Assert.areNotSame(someIO, model.io);
-
-        var modelList = new this.TestModelList();
-        Assert.isTrue(modelList.io instanceof Y.IO);
-        Assert.areNotSame(someIO, modelList.io);
-    },
-
-    'initializer should not override an IO instance on the prototype' : function () {
-        var io = new Y.IO();
-
-        Assert.isTrue(io instanceof Y.IO);
-        this.TestModel.prototype.io = this.TestModelList.prototype.io = io;
-
-        var model = new this.TestModel();
-        Assert.areSame(model.io, io);
-
-        var modelList = new this.TestModelList();
-        Assert.areSame(modelList.io, io);
-    },
-
-    'initializer should override `io` if it is not a IO instance' : function () {
-        var fakeIO = {};
-
-        Assert.isFalse(fakeIO instanceof Y.IO);
-        this.TestModel.prototype.io = this.TestModelList.prototype.io = fakeIO;
-
-        var model = new this.TestModel();
-        Assert.areNotSame(model.io, fakeIO);
-        Assert.isTrue(model.io instanceof Y.IO);
-
-        var modelList = new this.TestModelList();
-        Assert.areNotSame(modelList.io, fakeIO);
-        Assert.isTrue(modelList.io instanceof Y.IO);
     }
 }));
 
@@ -88,14 +48,6 @@ suite.add(new Y.Test.Case({
     tearDown : function () {
         delete this.TestModel;
         delete this.TestModelList;
-    },
-
-    '`io` property should be an IO instance by default' : function () {
-        var model = new this.TestModel();
-        Assert.isTrue(model.io instanceof Y.IO);
-
-        var modelList = new this.TestModelList();
-        Assert.isTrue(modelList.io instanceof Y.IO);
     },
 
     '`root` property should have a default value' : function () {
@@ -225,60 +177,6 @@ suite.add(new Y.Test.Case({
 
         model.root = '/model/';
         Assert.areSame('/model/123/', model.url());
-    }
-}));
-
-// -- ModelSync.Rest: IO Events ------------------------------------------------
-suite.add(new Y.Test.Case({
-    name : 'IO Events',
-
-    setUp : function () {
-        this.TestModel = Y.Base.create('testModel', Y.Model, [Y.ModelSync.Rest]);
-    },
-
-    tearDown : function () {
-        delete this.TestModel;
-    },
-
-    'Model instance with own IO instance should receive bubbled IO events' : function () {
-        var calls   = 0,
-            data    = null,
-            model   = new this.TestModel({
-                on : {
-                    'io:foo' : function (e) {
-                        calls += 1;
-                        data = e.data;
-                    }
-                }
-            });
-
-        model.io.fire('io:foo', { 'data': 'bar' });
-
-        Assert.areSame(1, calls);
-        Assert.areSame('bar', data);
-    },
-
-    'Model instance with IO instance on the prototype should not receive bubbled IO events' : function () {
-        var calls   = 0,
-            data    = null,
-            io      = new Y.IO({ bubbles: true }),
-            model;
-
-        this.TestModel.prototype.io = io;
-
-        model = new this.TestModel({
-            on : {
-                'io:foo' : function (e) {
-                    calls += 1;
-                    data = e.data;
-                }
-            }
-        });
-
-        io.fire('io:foo', { 'data': 'bar' });
-
-        Assert.areSame(0, calls);
-        Assert.areSame(null, data);
     }
 }));
 
