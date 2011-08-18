@@ -4,3 +4,5 @@ build_rollup_tmp*/
 .*.swp
 .svn
 CVS/
+node_modules/
+
