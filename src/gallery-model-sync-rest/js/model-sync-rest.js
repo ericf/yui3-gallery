@@ -110,34 +110,6 @@ Rest.prototype = {
     // *** Public Properties *** //
 
     /**
-    Y.IO instance object used to make each XHR.
-
-    By default each Model/ModelList instance will receive it's own IO instance
-    at initialization time, and be added as a event bubble target for all of
-    it's IO events— allowing this type of pattern:
-
-     @example
-        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
-            root : '/user'
-        });
-
-        var myUser = new User({ id: '123' });
-        myUser.on('io:start', function (e) {
-            console.log('Starting IO transaction.');
-        });
-        myUser.load(); // Causes `io:start` to fire.
-
-    Alternately a Y.IO instance can be set on a Model/ModelList subclass'
-    prototype and the same IO instance will be used by every instance of that
-    class for every XHR. In this case, the Model/ModelList instances are _not_
-    setup to be bubble targets for IO events; that would be noisy.
-
-    @property io
-    @type IO
-    @default undefined
-    **/
-
-    /**
     A String which represents the root or collection part of the URL space which
     relates to a Model or ModelList. Usually this value should be same for all
     instances of a specific Model/ModelList type.
@@ -249,14 +221,6 @@ Rest.prototype = {
     initializer : function (config) {
         config || (config = {});
         isValue(config.url) && (this.url = config.url);
-
-        // Check for IO instance on the prototype.
-        if ( ! (this.io instanceof Y.IO)) {
-            // Setup a new IO instance if there is not one on the prototype.
-            this.io = new Y.IO({ bubbles: true });
-            // Model/ModelList instance as a bubble target for it's IO events.
-            this.io.addTarget(this);
-        }
     },
 
     // *** Public Methods *** //
@@ -313,8 +277,8 @@ Rest.prototype = {
             method = 'POST';
         }
 
-        // Setup and send the IO request.
-        this.io.send(url, {
+        // Setup and send the XHR.
+        Y.io(url, {
             method  : method,
             headers : headers,
             data    : entity,
