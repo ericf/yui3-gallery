@@ -4,7 +4,7 @@ var TodoAppView, TodoList, TodoModel, TodoView;
 
 // -- Model --------------------------------------------------------------------
 TodoModel = Y.TodoModel = Y.Base.create('todoModel', Y.Model, [Y.ModelSync.Rest], {
-    root: '/todo',
+    root: '/data/todo',
 
     toggleDone: function () {
         this.set('done', !this.get('done')).save();
@@ -19,7 +19,7 @@ TodoModel = Y.TodoModel = Y.Base.create('todoModel', Y.Model, [Y.ModelSync.Rest]
 // -- ModelList ----------------------------------------------------------------
 TodoList = Y.TodoList = Y.Base.create('todoList', Y.ModelList, [Y.ModelSync.Rest], {
     model: TodoModel,
-    url  : '/todo',
+    url  : '/data/todo',
 
     // Returns an array of all models in this list with the `done` attribute
     // set to `true`.
