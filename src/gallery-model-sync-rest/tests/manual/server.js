@@ -12,7 +12,7 @@ var fs      = require('fs'),
 
 Collection = function () {
     this._lastId = 0;
-    this.items  = {};
+    this.items   = {};
 };
 
 Collection.prototype = {
@@ -67,6 +67,8 @@ app.configure(function(){
     app.use(express.static(__dirname));
     // Handles parsing HTTP request entitiy bodies from the client.
     app.use(express.bodyParser());
+    // Handles requests which use POST instead of PUT or DELETE.
+    app.use(express.methodOverride());
 });
 
 // YUI 3 combo handler.
