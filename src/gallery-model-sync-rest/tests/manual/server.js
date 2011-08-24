@@ -8,6 +8,60 @@ var fs      = require('fs'),
     yui3Path        = __dirname + '/../../../../../yui3',
     yui3GalleryPath = __dirname + '/../../../../';
 
+// *** Collection *** //
+
+Collection = function () {
+    this._lastId = 0;
+    this.items  = {};
+};
+
+Collection.prototype = {
+    item : function (id) {
+        return this.items[id];
+    },
+
+    add : function (item) {
+        var id = this._generateId();
+        item.id = id;
+        return (this.items[id] = item);
+    },
+
+    update : function (item) {
+        var id = item && item.id;
+        this.items[id] && (this.items[id] = item);
+    },
+
+    remove : function (item) {
+        var id = item && item.id;
+        delete this.items[id];
+    },
+
+    toJSON : function () {
+        var items       = this.items,
+            ids         = Object.keys(items),
+            collection  = [];
+
+        // Sort Ids.
+        ids.sort(function (a, b) {
+            return a - b;
+        });
+
+        // Put items into a result-set.
+        ids.forEach(function (id) {
+            collection.push(items[id]);
+        });
+
+        return collection;
+    },
+
+    _generateId : function () {
+        this._lastId++;
+        return this._lastId;
+    }
+};
+
+// *** App *** //
+
 app.configure(function(){
     // Static files.
     app.use(express.static(__dirname));
@@ -28,7 +82,7 @@ app.get('/yui3-gallery', combo.combine({ rootPath: yui3GalleryPath }), function 
 // Lookup the data collection and set it on the request object and continue.
 app.all('/data/:collection/:id?', function (req, res, next) {
     var collection = req.params.collection;
-    req.collection = data[collection] || (data[collection] = []);
+    req.collection = data[collection] || (data[collection] = new Collection());
     next();
 });
 
@@ -37,27 +91,21 @@ app.get('/data/:collection', function (req, res) {
 });
 
 app.post('/data/:collection', function (req, res) {
-    var collection  = req.collection,
-        item        = req.body;
-
-    item.id = collection.length;
-    collection.push(item);
-    res.json(item);
+    res.json(req.collection.add(req.body));
 });
 
 // Lookup specific item on a collection and set it on the request then continue,
 // or error out with a 404.
 app.all('/data/:collection/:id', function (req, res, next) {
-    var id          = req.params.id,
-        collection  = req.params.collection,
-        item        = req.collection[id];
+    var id      = req.params.id,
+        item    = req.collection.item(id);
 
     if (item) {
         req.item = item;
-        next();
-    } else {
-        res.send('Cannot find item: ' + id + ' in: ' + collection, 404);
+        return next();
     }
+
+    res.send('Cannot find item: ' + id + ' in: ' + req.params.collection, 404);
 });
 
 app.get('/data/:collection/:id', function (req, res) {
@@ -65,12 +113,12 @@ app.get('/data/:collection/:id', function (req, res) {
 });
 
 app.put('/data/:collection/:id', function (req, res) {
-    req.collection[req.item.id] = req.body;
+    req.collection.update(req.body);
     res.send();
 });
 
 app.del('/data/:collection/:id', function (req, res) {
-    req.collection.splice(req.item.id, 1);
+    req.collection.remove(req.item);
     res.send();
 });
 
