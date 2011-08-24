@@ -4,18 +4,18 @@ var ArrayAssert  = Y.ArrayAssert,
     Assert       = Y.Assert,
     ObjectAssert = Y.ObjectAssert,
 
-    modelSyncRestSuite;
+    modelSyncRESTSuite;
 
-// -- ModelSync.Rest Suite -----------------------------------------------------
-suite = new Y.Test.Suite('ModelSync.Rest');
+// -- ModelSync.REST Suite -----------------------------------------------------
+suite = new Y.Test.Suite('ModelSync.REST');
 
-// -- ModelSync.Rest: Lifecycle ------------------------------------------------
+// -- ModelSync.REST: Lifecycle ------------------------------------------------
 suite.add(new Y.Test.Case({
     name : 'Lifecycle',
 
     setUp : function () {
-        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.Rest]);
-        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.Rest], {
+        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.REST]);
+        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.REST], {
             model : this.TestModel
         });
     },
@@ -34,13 +34,13 @@ suite.add(new Y.Test.Case({
     }
 }));
 
-// -- ModelSync.Rest: Properties -----------------------------------------------
+// -- ModelSync.REST: Properties -----------------------------------------------
 suite.add(new Y.Test.Case({
     name : 'Properties',
 
     setUp : function () {
-        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.Rest]);
-        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.Rest], {
+        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.REST]);
+        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.REST], {
             model : this.TestModel
         });
     },
@@ -67,13 +67,13 @@ suite.add(new Y.Test.Case({
     }
 }));
 
-// -- ModelSync.Rest: Methods --------------------------------------------------
+// -- ModelSync.REST: Methods --------------------------------------------------
 suite.add(new Y.Test.Case({
     name : 'Methods',
 
     setUp : function () {
-        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.Rest]);
-        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.Rest], {
+        this.TestModel      = Y.Base.create('testModel', Y.Model, [Y.ModelSync.REST]);
+        this.TestModelList  = Y.Base.create('testModelList', Y.ModelList, [Y.ModelSync.REST], {
             model : this.TestModel
         });
     },

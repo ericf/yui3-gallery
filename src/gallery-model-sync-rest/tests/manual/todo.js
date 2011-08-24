@@ -3,7 +3,7 @@ YUI.add('todo', function (Y) {
 var TodoAppView, TodoList, TodoModel, TodoView;
 
 // -- Model --------------------------------------------------------------------
-TodoModel = Y.TodoModel = Y.Base.create('todoModel', Y.Model, [Y.ModelSync.Rest], {
+TodoModel = Y.TodoModel = Y.Base.create('todoModel', Y.Model, [Y.ModelSync.REST], {
     root: '/data/todo',
 
     toggleDone: function () {
@@ -17,7 +17,7 @@ TodoModel = Y.TodoModel = Y.Base.create('todoModel', Y.Model, [Y.ModelSync.Rest]
 });
 
 // -- ModelList ----------------------------------------------------------------
-TodoList = Y.TodoList = Y.Base.create('todoList', Y.ModelList, [Y.ModelSync.Rest], {
+TodoList = Y.TodoList = Y.Base.create('todoList', Y.ModelList, [Y.ModelSync.REST], {
     model: TodoModel,
     url  : '/data/todo',
 

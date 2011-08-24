@@ -15,7 +15,7 @@ value for `root` when sub-classing Model, and only provide a value for `url`
 when sub-classing ModelList.
 
 @example
-    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
+    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
         root : '/user'
     }, {
         ATTRS : {
@@ -23,16 +23,16 @@ when sub-classing ModelList.
         }
     });
 
-    var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.Rest], {
+    var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {
         model   : User,
         url     : '/user'
     });
 
-@class ModelSync.Rest
+@class ModelSync.REST
 @extension Model ModelList
 **/
 
-var Rest,
+var RESTSync,
 
     Lang        = Y.Lang,
     sub         = Lang.sub,
@@ -41,9 +41,9 @@ var Rest,
     isNumber    = Lang.isNumber,
     isFunction  = Lang.isFunction;
 
-// *** Rest *** //
+// *** RESTSync *** //
 
-Rest = function () {};
+RESTSync = function () {};
 
 /**
 Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
@@ -52,7 +52,7 @@ Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
 @type Object
 @static
 **/
-Rest.HTTP_METHODS = {
+RESTSync.HTTP_METHODS = {
     'create': 'POST',
     'read'  : 'GET',
     'update': 'PUT',
@@ -74,7 +74,7 @@ specific headers will take presidence.
         'Content-Type'  : 'application/json'
     }
 **/
-Rest.HTTP_HEADERS = {
+RESTSync.HTTP_HEADERS = {
     'Accept'        : 'application/json',
     'Content-Type'  : 'application/json'
 };
@@ -103,9 +103,9 @@ was overridden.
 @default false
 @static
 **/
-Rest.EMULATE_HTTP = false;
+RESTSync.EMULATE_HTTP = false;
 
-Rest.prototype = {
+RESTSync.prototype = {
 
     // *** Public Properties *** //
 
@@ -120,7 +120,7 @@ Rest.prototype = {
     '/'; if the `root` does not end with a slash, neither will the XHR URLs.
 
     @example
-        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
+        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
             root : '/user/'
         }, {
             ATTRS : {
@@ -176,7 +176,7 @@ Rest.prototype = {
     properties like this:
 
     @example
-        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.Rest], {
+        var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
             root : '/users',
             url  : '/user/{id}'
         }, {
@@ -256,9 +256,9 @@ Rest.prototype = {
         options || (options = {});
 
         var url     = this._getURL(),
-            method  = Rest.HTTP_METHODS[action],
-            headers = Y.merge(Rest.HTTP_HEADERS, options.headers),
-            timeout = options.timeout || Rest.HTTP_TIMEOUT,
+            method  = RESTSync.HTTP_METHODS[action],
+            headers = Y.merge(RESTSync.HTTP_HEADERS, options.headers),
+            timeout = options.timeout || RESTSync.HTTP_TIMEOUT,
             entity;
 
         // Prepare the content if we are sending data to the server.
@@ -270,7 +270,8 @@ Rest.prototype = {
         }
 
         // Setup HTTP emulation for older servers if we need it.
-        if (Rest.EMULATE_HTTP && (method === 'PUT' || method === 'DELETE')) {
+        if (RESTSync.EMULATE_HTTP &&
+                (method === 'PUT' || method === 'DELETE')) {
             // Pass along original method type in the headers.
             headers['X-HTTP-Method-Override'] = method;
             // Fall-back to using POST method type.
@@ -373,4 +374,4 @@ Rest.prototype = {
 
 // *** Namespace *** //
 
-Y.namespace('ModelSync').Rest = Rest;
+Y.namespace('ModelSync').REST = RESTSync;
