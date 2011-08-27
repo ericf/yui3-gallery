@@ -138,4 +138,4 @@ YQLSync.prototype = {
 Y.namespace('ModelSync').YQL = YQLSync;
 
 
-}, '@VERSION@' ,{requires:['yql'], skinnable:false, optional:['cache', 'cache-offline']});
+}, 'gallery-2011.08.24-23-44' ,{requires:['yql'], skinnable:false, optional:['cache', 'cache-offline']});
