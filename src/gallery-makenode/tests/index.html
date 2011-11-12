@@ -11,13 +11,15 @@
 		
 		<div id="test"></div>
 
-		<script src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
+		<script src="http://yui.yahooapis.com/3.4.1pr1/build/yui/yui-min.js"></script>
 
 		<script>
 			YUI({
-				// debug:true,
-				// useBrowserConsole:true,
-				// filter: 'debug',
+				/*
+				debug:true,
+				useBrowserConsole:true,
+				filter: 'debug',
+				*/
 				groups: {
 					sp: {
 						base: '../../../build/',
@@ -30,7 +32,7 @@
 					}
 				}
 			}).use(
-				'node','substitute','base', 'widget', 'gallery-makenode','test', 'console','node-event-simulate', // 'event-simulate',
+				'node','substitute','base', 'widget', 'gallery-makenode','test', 'console','node-event-simulate', 'event-valuechange', // 'event-simulate',
 				function(Y) {
 					"use strict";
 					var A = Y.Assert,
@@ -256,19 +258,30 @@
 								
 								inputChanged: false,
 								buttonClicked: false,
+								inputValueChanged: false,
+								delegatedButtonClick: false,
 								_afterInputChange: function (ev) {
 									this.inputChanged = true;
 								},
 								_afterClick: function (ev) {
 									this.buttonClicked = true;
+								},
+								_afterInputValueChange: function (ev) {
+									this.inputValueChanged = true;
+								},
+								_delegateButtonClick: function (ev) {
+									this.delegatedButtonClick = true;
 								}
 							},
 							{
 								_CLASS_NAMES: [INPUT, FORM, BUTTON],
 								_TEMPLATE: '<input class="{c input}" value="{p value}" /><button class="{c button}">Ok<\/button>',
 								_EVENTS: {
-									input: 'change',
-									button: {type: 'click', fn: '_afterClick'}
+									input: ['change','valueChange'],
+									button: [
+										{type: 'click', fn: '_afterClick'},
+										{type: 'click', when: 'delegate'}
+									]
 								}
 									
 							}
@@ -285,9 +298,16 @@
 						mn.render(testNode);
 						mn._inputNode.simulate('change');
 						mn._buttonNode.simulate('click');
-						A.isTrue(mn.inputChanged);
-						A.isTrue(mn.buttonClicked);
+						A.isTrue(mn.inputChanged, 'inputChanged');
+						A.isTrue(mn.buttonClicked, 'buttonClicked');
+						A.isTrue(mn.delegatedButtonClick, 'delegatedButtonClick');
+						mn._inputNode.focus();
+						mn._inputNode.set('value','whatever');
+						this.wait(function () {
+							A.isTrue(mn.inputValueChanged, 'inputValueChanged');
+						},100);
 					}
+						
 				}));		
 
 				
@@ -426,6 +446,192 @@
 					
 					}
 				}));		
+				suite.add(new Y.Test.Case({
+					name: "tests after attribute change",
+					setUp : function () {
+						MN = Y.Base.create(
+							'MakeNodeTest',
+							Y.Widget,
+							[Y.MakeNode],
+							{
+								_afterThisValueChange: function (ev) {
+									this.actualValue = ev.newVal;
+								}
+							},
+							{
+								_TEMPLATE: '<input class="{c input}">',
+								_CLASS_NAMES: [INPUT],
+								_EVENTS: {
+									THIS: 'valueChange'
+								},
+								ATTRS: {
+									value: {
+										value: 5
+									}
+								}
+							}
+						);
+					},
+					tearDown : function () {
+						if (mn) {
+							mn.destroy();
+						}
+						testNode.setContent('');
+						MN = mn = null;
+					},					
+					testOnInit: function () {
+						mn = new MN({value:42}).render(testNode);
+						A.isUndefined(mn.actualValue,'value should remain undefined');
+					},
+					testSetLater: function () {
+						mn = new MN().render(testNode);
+						mn.set('value',42);
+						A.areEqual(42,mn.actualValue,'value should have changed to 42');
+					},
+					testSetPrevented : function () {
+						MN._EVENTS.THIS = [MN._EVENTS.THIS, {type:'valueChange',when:'before'}];
+						MN.prototype._beforeThisValueChange =  function (ev) {
+							this.beforeValueChanged = true;
+							ev.halt(true);
+						};
+						mn = new MN().render(testNode);
+						mn.set('value',42);
+						A.isTrue(mn.beforeValueChanged, 'beforeValueChanged');
+						A.isUndefined(mn.actualValue,'actualValue should remain undefined');
+						A.areEqual(5,mn.get('value'),'value should have remained at 5');
+					}
+				}));
+				
+				suite.add(new Y.Test.Case({
+					setUp : function () {
+						MN = Y.Base.create(
+							'AfterAttributeChange',
+							Y.Base,
+							[],
+							{
+								initializer: function () {
+									this.after('valueChange',this._afterValueChange, this);
+								},
+								_afterValueChange: function (ev) {
+									this.actualValue = ev.newVal;
+								}
+							},
+							{
+								_TEMPLATE: '<input class="{c input}">',
+								_CLASS_NAMES: [INPUT],
+								ATTRS: {
+									value: {
+										value: 5
+									}
+								}
+							}
+						);
+					},
+					tearDown : function () {
+						mn.destroy();
+						MN = mn = null;
+					},					
+					testOnInit: function () {
+						mn = new MN({value:42});
+						A.isUndefined(mn.actualValue,'value will remain undefined, but shouldn\'t');
+					},
+					testSetLater: function () {
+						mn = new MN();
+						mn.set('value',42);
+						A.areEqual(42,mn.actualValue,'value should have changed to 42');
+					}
+				}));
+
+				suite.add(new Y.Test.Case({
+					name: 'Auto renderUI',
+					tearDown : function () {
+						mn.destroy();
+						MN = mn = null;
+					},					
+					testAutoRenderUI: function () {
+						MN = Y.Base.create(
+							'MakeNodeTest',
+							Y.Widget,
+							[Y.MakeNode],
+							{
+							},
+							{
+								_TEMPLATE: '<input class="{c input}">',
+								_CLASS_NAMES: [INPUT]
+							}
+						);
+						mn = new MN().render(testNode);
+						A.areSame(testNode.one(INPUT), mn._inputNode);
+						A.isTrue(mn._inputNode.hasClass(mn._classNames[INPUT]));
+					},
+					testNoAutoRenderUI: function () {
+						MN = Y.Base.create(
+							'MakeNodeTest',
+							Y.Widget,
+							[Y.MakeNode],
+							{
+								renderUI: function () {
+									this.get('contentBox').append(this._makeNode('<label class="pepe" />'));
+								}
+							},
+							{
+							}
+						);
+						MNChild = Y.Base.create(
+							'MakeNodeTestChild',
+							MN,
+							[],
+							{
+							},
+							{
+								_TEMPLATE: '<input class="{c input}">',
+								_CLASS_NAMES: [INPUT]
+							}
+						);
+						mn = new MNChild().render(testNode);
+						A.isTrue(testNode.one('label').hasClass('pepe'));
+						A.isUndefined(mn._inputNode);
+					}
+				}));
+				suite.add(new Y.Test.Case({
+					name: 'Nested objects',
+					testNestedObjects: function () {
+						MN = Y.Base.create(
+							'MakeNodeTest',
+							Y.Widget,
+							[Y.MakeNode],
+							{
+								prop: null
+							},
+							{
+								_TEMPLATE: '{n p prop @ attr}'
+							}
+						);
+						var MNOther = Y.Base.create( 
+							'other',
+							Y.Base,
+							[],
+							{
+							},
+							{
+								ATTRS: {
+									attr: {
+										value: 'works'
+									}
+								}
+							}
+						);
+						var mnOther = new MNOther();
+						mn = new MN();
+						mn.prop = mnOther;
+						mn.render(testNode);
+						A.areEqual('works', testNode.one('.' + mn._classNames['content']).get('innerHTML'));
+						mnOther.destroy();
+						mn.destroy();
+						mn = MN = MNOther = null;
+					}
+				}));
+					
 
 
 				Y.Test.Runner.add(suite);
