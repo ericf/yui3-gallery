@@ -1,0 +1,17 @@
+{
+    "name"       : "YUI Gallery",
+    "description": "YUI Gallery modules by ericf",
+    "version"    : "0.1.0",
+    "url"        : "https://github.com/ericf/yui3-gallery",
+
+    "options": {
+        "linkNatives"   : "true",
+        "attributesEmit": "true",
+        "outdir"        : "./api",
+
+        "paths": [
+            "./gallery-model-sync-rest/js",
+            "./gallery-model-sync-yql/js"
+        ]
+    }
+}
