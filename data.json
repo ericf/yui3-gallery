@@ -1,0 +1,363 @@
+{
+    "project": {
+        "name": "YUI Gallery",
+        "description": "YUI Gallery modules by ericf",
+        "version": "0.1.0",
+        "url": "https://github.com/ericf/yui3-gallery"
+    },
+    "files": {
+        "gallery-model-sync-rest/js/model-sync-rest.js": {
+            "name": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "modules": {
+                "gallery-model-sync-rest": 1
+            },
+            "classes": {
+                "ModelSync.REST": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "gallery-model-sync-yql/js/model-sync-yql.js": {
+            "name": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "modules": {
+                "gallery-model-sync-yql": 1
+            },
+            "classes": {
+                "ModelSync.YQL": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "gallery-model-sync-rest": {
+            "name": "gallery-model-sync-rest",
+            "submodules": {},
+            "classes": {
+                "ModelSync.REST": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 1,
+            "description": "An Extension which provides a RESTful HTTP sync implementation that can be mixed\ninto a Model or ModelList subclass."
+        },
+        "gallery-model-sync-yql": {
+            "name": "gallery-model-sync-yql",
+            "submodules": {},
+            "classes": {
+                "ModelSync.YQL": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 1,
+            "description": "An Extension which provides a YQL sync implementation that can be mixed into a\nModel or ModelList subclass."
+        }
+    },
+    "classes": {
+        "ModelSync.REST": {
+            "name": "ModelSync.REST",
+            "shortname": "ModelSync.REST",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Model ModelList"
+            ],
+            "module": "gallery-model-sync-rest",
+            "namespace": "",
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 8,
+            "description": "An Extension which provides a RESTful HTTP sync implementation that can be mixed\ninto a Model or ModelList subclass.\n\nThis makes it trivial for your Model or ModelList subclasses communicate and\ntransmit JSON data via RESTful HTTP. In most cases you'll only need to provide a\nvalue for `root` when sub-classing Model, and only provide a value for `url`\nwhen sub-classing ModelList.",
+            "example": [
+                "\n\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root : '/user'\n    }, {\n        ATTRS : {\n            name : {}\n        }\n    });\n\n    var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {\n        model : User,\n        url   : '/user'\n    });"
+            ]
+        },
+        "ModelSync.YQL": {
+            "name": "ModelSync.YQL",
+            "shortname": "ModelSync.YQL",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Model ModelList"
+            ],
+            "module": "gallery-model-sync-yql",
+            "namespace": "",
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 8,
+            "description": "This makes it trivial for your Model or ModelList subclasses to load data from\nYQL.\n\n**Note:** that `read` is the only `sync()` action that is supported at this\ntime, you will not be able to `save()` data to YQL.",
+            "example": [
+                "\n\n    var Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {\n        query : 'SELECT * FROM flickr.photos.info WHERE photo_id={id}',\n        parse : function (results) {\n            return results && results.photo;\n        }\n    }, {\n        ATTRS : {\n            title       : {},\n            description : {}\n        }\n    });"
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 49,
+            "description": "Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.",
+            "itemtype": "property",
+            "name": "HTTP_METHODS",
+            "type": "Object",
+            "static": 1,
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 63,
+            "description": "Default headers used with all XHRs.\n\nThese headers will be merged with any request-specific headers, and the request-\nspecific headers will take presidence.",
+            "itemtype": "property",
+            "name": "HTTP_HEADERS",
+            "type": "Object",
+            "static": 1,
+            "default": "{\n        'Accept'      : 'application/json',\n        'Content-Type': 'application/json'\n    }",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 83,
+            "description": "Default number of milliseconds before the XHR will timeout/abort.\n\nThis can be overridden on a per-request basis.",
+            "itemtype": "property",
+            "name": "HTTP_TIMEOUT",
+            "type": "Number",
+            "static": 1,
+            "default": "undefined",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 94,
+            "description": "Static flag to use the HTTP POST method instead of PUT or DELETE.\n\nIf the server-side HTTP framework isn't RESTful, setting this flag to `true`\nwill cause all PUT and DELETE requests to instead use the POST HTTP method, and\nadd a X-HTTP-Method-Override HTTP header with the value of the method type which\nwas overridden.",
+            "itemtype": "property",
+            "name": "EMULATE_HTTP",
+            "type": "Boolean",
+            "default": "false",
+            "static": 1,
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 113,
+            "description": "A String which represents the root or collection part of the URL space which\nrelates to a Model or ModelList. Usually this value should be same for all\ninstances of a specific Model/ModelList type.\n\nWhen sub-classing Y.Model, most of the time you'll want to just override\nthis property, and let the URLs for the XHRs be generated by convention. If\nthe `root` String ends with a trailing-slash, XHR URLs will also end with a\n'/'; if the `root` does not end with a slash, neither will the XHR URLs.",
+            "example": [
+                "\n\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root : '/user/'\n    }, {\n        ATTRS : {\n            name : {}\n        }\n    });\n\n    var myUser = new User({ id: '123' });\n    myUser.load(); // will GET the User data from: /user/123/\n\n    var newUser = new User({ name: 'Eric Ferraiuolo' });\n    newUser.save(); // will POST the User data to: /user/\n\nWhen sub-classing Y.ModelList, usually you'll want to ignore configuring the\n`root` and instead just set the `url` to a String; but if you just specify a\nvalue for `root`, things will work correctly."
+            ],
+            "itemtype": "property",
+            "name": "root",
+            "type": "String",
+            "default": "''",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 149,
+            "description": "A Function or String which is used to generate or specify the URL for the\nXHRs. While, this property can be defined for each Model/ModelList instance,\nusually you'll want to use a Function or String pattern instead.\n\nIf the `url` property is a Function, it should return the String that should\nbe used as the URL. The Function will be called before each request.\n\nIf the `url` property is a String, it will be processed by `Y.Lang.sub()`;\nthis is useful when the URLs for a Model type match a specific pattern and\ncan use simple replacement tokens:",
+            "example": [
+                "\n\n    '/user/{id}'\n\n**Note:** String substitution on the `url` property will only happen for\nY.Model subclasses, and only String and Number ATTR values will be\nsubstituted; do not expect something fancy to happen with Object, Array, or\nBoolean values; they will simply be ignored.\n\nWhen sub-classing Y.Model, you will probably be able to rely on the default\nimplementation of `url()` which works in conjunction with the `root`\nproperty and whether the Model instance is new or not (i.e. has an `id`). If\nthe `root` property ends with a trailing-slash, the generated URL for the\nspecific Model instance will also end with a trailing-slash.\n\nIf your URL-space has plural root or collection URLs, while the specific\nitem resources are under a singular name, e.g. /users (plural) and /user/123\n(singular); you'll probably want to configure the `root` and `url`\nproperties like this:",
+                "\n\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root : '/users',\n        url  : '/user/{id}'\n    }, {\n        ATTRS : {\n            name : {}\n        }\n    });\n\n    var myUser = new User({ id: '123' });\n    myUser.load(); // Will GET the User data from: /user/123\n\n    var newUser = new User({ name: 'Eric Ferraiuolo' });\n    newUser.save(); // Will POST the User data to: /users\n\nWhen sub-classing Y.ModelList, you probably just need to specify a simple\nString for the `url` property and leave `root` to be the default value."
+            ],
+            "itemtype": "method",
+            "name": "url",
+            "type": "Function|String",
+            "return": {
+                "description": "URL to for the XHR to the server.",
+                "type": "String"
+            },
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 232,
+            "description": "Communicates with a RESTful HTTP server by sending and receiving JSON data\nvia XHRs.\n\nThis method is called internally by load(), save(), and destroy().",
+            "itemtype": "method",
+            "name": "sync",
+            "params": [
+                {
+                    "name": "action",
+                    "description": "Sync action to perform. May be one of the following:\n\n  * create: Store a newly-created model for the first time.\n  * delete: Delete an existing model.\n  * read  : Load an existing model.\n  * update: Update an existing model.",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Sync options.",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "headers",
+                            "description": "The HTTP headers to mix with the default\n    headers specified by the `headers` property.",
+                            "type": "Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "timeout",
+                            "description": "The number of milliseconds before the\n    request will timeout and be aborted.",
+                            "type": "Number",
+                            "optional": true
+                        }
+                    ]
+                },
+                {
+                    "name": "callback",
+                    "description": "Called when the sync operation finishes.",
+                    "type": "Callback",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "err",
+                            "description": "If an error occurred, this parameter will\n    contain the error. If the sync operation succeeded, _err_ will be\n    falsy.",
+                            "type": "Error|null"
+                        },
+                        {
+                            "name": "response",
+                            "description": "The server's response. This value will\n    be passed to the parse() method, which is expected to parse it and\n    return an attribute hash.",
+                            "type": "Any",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 311,
+            "description": "Helper method to return the URL to use when making the XHR to the server.\n\nThis method correctly handles variations of the `url` property/method.",
+            "itemtype": "method",
+            "name": "_getURL",
+            "return": {
+                "description": "the URL for the XHR",
+                "type": "String"
+            },
+            "access": "protected",
+            "tagname": "",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 344,
+            "description": "Joins the `root` URL to the specified _url_, normalizing leading/trailing\n`/` characters.\n\nCopied from YUI 3's `Y.Controller` Class: by Ryan Grove (Yahoo! Inc.)\nhttps://github.com/yui/yui3/blob/master/src/app/js/controller.js",
+            "example": [
+                "\n\n    model.root = '/foo'\n    model._joinURL('bar');  // => '/foo/bar'\n    model._joinURL('/bar'); // => '/foo/bar'\n\n    model.root = '/foo/'\n    model._joinURL('bar');  // => '/foo/bar'\n    model._joinURL('/bar'); // => '/foo/bar'"
+            ],
+            "itemtype": "method",
+            "name": "_joinURL",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "URL to append to the `root` URL.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Joined URL.",
+                "type": "String"
+            },
+            "access": "protected",
+            "tagname": "",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 50,
+            "description": "A String which is the YQL query. The query will be passed to `buildQuery()`\nwhere, by default, will be processed by `Y.Lang.sub()`; which is useful when\nthe YQL query for a Model type matches a specific pattern and can use simple\nreplacement tokens:",
+            "example": [
+                "\n\n    'SELECT * FROM flickr.photos.info WHERE photo_id={id}'"
+            ],
+            "itemtype": "property",
+            "name": "query",
+            "type": "String",
+            "default": "''",
+            "class": "ModelSync.YQL",
+            "module": "gallery-model-sync-yql"
+        },
+        {
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 66,
+            "description": "A Y.Cache instance to be used to store the YQL query results. You may wish\nto use a Y.CacheOffline instance to make subsequent loads of your app fast.",
+            "itemtype": "property",
+            "name": "cache",
+            "type": "Cache",
+            "default": "undefined",
+            "class": "ModelSync.YQL",
+            "module": "gallery-model-sync-yql"
+        },
+        {
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 84,
+            "description": "Returns a processed YQL query by taking the `query` String and substituting\nany replacement tokens with the `options` passed to `load()`, and if it's a\nModel instance, substituting the Model's `id`.",
+            "itemtype": "method",
+            "name": "buildQuery",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Sync options.",
+                    "type": "Object",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "The query to be sent to YQL.",
+                "type": "String"
+            },
+            "class": "ModelSync.YQL",
+            "module": "gallery-model-sync-yql"
+        },
+        {
+            "file": "gallery-model-sync-yql/js/model-sync-yql.js",
+            "line": 99,
+            "description": "Communicates with YQL by sending sending over the YQL query and receiving\nJSON results back.\n\nThis method is called internally by load(), save(), and destroy().\n\n**Note:** This will only actually do something when called via load().",
+            "itemtype": "method",
+            "name": "sync",
+            "params": [
+                {
+                    "name": "action",
+                    "description": "Sync action to perform. May be one of the following:\n\n  * read: Load an existing model.",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Sync options.",
+                    "type": "Object",
+                    "optional": true
+                },
+                {
+                    "name": "callback",
+                    "description": "Called when the sync operation finishes.",
+                    "type": "Callback",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "err",
+                            "description": "If an error occurred, this parameter will\n    contain the error. If the sync operation succeeded, _err_ will be\n    falsy.",
+                            "type": "Error|null"
+                        },
+                        {
+                            "name": "response",
+                            "description": "The YQL results. This value will be\n    passed to the parse() method, which is expected to parse it and return\n    an attribute hash or array depending on whether the method is\n    called on a Model or ModelList.",
+                            "type": "Any",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "ModelSync.YQL",
+            "module": "gallery-model-sync-yql"
+        }
+    ]
+}
