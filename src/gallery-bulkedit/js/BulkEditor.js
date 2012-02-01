@@ -715,14 +715,8 @@ Y.extend(BulkEditor, Y.Widget,
 		{
 			page:       page_errors || [],
 			records:    record_field_errors || [],
-			record_map: {}
+			record_map: Y.Array.toObject(record_field_errors || [], 'id')
 		};
-
-		Y.Array.each(this.server_errors.records, function(r)
-		{
-			this.server_errors.record_map[ r.id ] = r;
-		},
-		this);
 
 		this._updatePageStatus();
 
@@ -1284,10 +1278,9 @@ BulkEditor.markup =
 
 		var option = '<option value="{value}" {selected}>{text}</option>';
 
-		var options = '';
-		Y.Array.each(o.field.values, function(v)
+		var options = Y.Array.reduce(o.field.values, '', function(s, v)
 		{
-			options += Y.Lang.sub(option,
+			return s + Y.Lang.sub(option,
 			{
 				value:    v.value,
 				text:     cleanHTML(v.text),

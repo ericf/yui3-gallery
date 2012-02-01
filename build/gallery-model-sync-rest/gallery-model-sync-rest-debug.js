@@ -209,9 +209,9 @@ RESTSync.prototype = {
         var root = this.root,
             url;
 
-        // if (this instanceof Y.ModelList || this.isNew()) {
-        //     return root;
-        // }
+        if (this instanceof Y.ModelList || this.isNew()) {
+            return root;
+        }
 
         url = this.getAsURL('id');
         if (root && root.charAt(root.length - 1) === '/') {
@@ -327,18 +327,18 @@ RESTSync.prototype = {
             return this.url();
         }
 
-        // if (this instanceof Y.Model) {
-        //     data = {};
-        //     Y.Object.each(this.toJSON(), function (v, k) {
-        //         if (isString(v) || isNumber(v)) {
-        //             // URL-encode any String or Number values.
-        //             data[k] = encodeURIComponent(v);
-        //         }
-        //     });
+        if (this instanceof Y.Model) {
+            data = {};
+            Y.Object.each(this.toJSON(), function (v, k) {
+                if (isString(v) || isNumber(v)) {
+                    // URL-encode any String or Number values.
+                    data[k] = encodeURIComponent(v);
+                }
+            });
 
-        //     // Substitute placeholders with the URL-encoded data values.
-        //     url = sub(url, data);
-        // }
+            // Substitute placeholders with the URL-encoded data values.
+            url = sub(url, data);
+        }
 
         return url || this.root;
     },
@@ -384,4 +384,4 @@ RESTSync.prototype = {
 Y.namespace('ModelSync').REST = RESTSync;
 
 
-}, '@VERSION@' ,{skinnable:false, requires:['model', 'model-list', 'io-base', 'json-stringify']});
+}, 'gallery-2011.09.07-20-35' ,{requires:['io-base', 'json-stringify'], skinnable:false});

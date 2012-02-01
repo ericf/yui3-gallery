@@ -1701,14 +1701,8 @@ Y.extend(BulkEditor, Y.Widget,
 		{
 			page:       page_errors || [],
 			records:    record_field_errors || [],
-			record_map: {}
+			record_map: Y.Array.toObject(record_field_errors || [], 'id')
 		};
-
-		Y.Array.each(this.server_errors.records, function(r)
-		{
-			this.server_errors.record_map[ r.id ] = r;
-		},
-		this);
 
 		this._updatePageStatus();
 
@@ -2270,10 +2264,9 @@ BulkEditor.markup =
 
 		var option = '<option value="{value}" {selected}>{text}</option>';
 
-		var options = '';
-		Y.Array.each(o.field.values, function(v)
+		var options = Y.Array.reduce(o.field.values, '', function(s, v)
 		{
-			options += Y.Lang.sub(option,
+			return s + Y.Lang.sub(option,
 			{
 				value:    v.value,
 				text:     cleanHTML(v.text),
@@ -2525,9 +2518,9 @@ Y.extend(HTMLTableBulkEditor, BulkEditor,
 
 			var row_markup = '<th class="{cell} {prefix}{key}">{label}</th>';
 
-			Y.Array.each(this.get('columns'), function(column)
+			s = Y.Array.reduce(this.get('columns'), s, function(s, column)
 			{
-				s += Y.Lang.sub(row_markup,
+				return s + Y.Lang.sub(row_markup,
 				{
 					cell:   cell_class,
 					prefix: cell_class_prefix,
@@ -2651,4 +2644,4 @@ Y.extend(HTMLTableBulkEditor, BulkEditor,
 Y.HTMLTableBulkEditor = HTMLTableBulkEditor;
 
 
-}, 'gallery-2011.09.07-20-35' ,{skinnable:true, optional:['datasource','dataschema','gallery-paginator'], requires:['widget','datasource-local','gallery-busyoverlay','gallery-formmgr-css-validation','gallery-node-optimizations','gallery-scrollintoview']});
+}, 'gallery-2012.01.11-21-03' ,{skinnable:true, optional:['datasource','dataschema','gallery-paginator'], requires:['widget','datasource-local','gallery-busyoverlay','gallery-formmgr-css-validation','gallery-node-optimizations','gallery-scrollintoview','array-extras','gallery-object-extras']});
