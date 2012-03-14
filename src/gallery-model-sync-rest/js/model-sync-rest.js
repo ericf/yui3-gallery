@@ -106,6 +106,18 @@ was overridden.
 **/
 RESTSync.EMULATE_HTTP = false;
 
+/**
+Properties that shouldn't be turned into ad-hoc attributes when passed to a
+Model or ModelList constructor.
+
+@property _NON_ATTRS_CFG
+@type Array
+@default ['url']
+@static
+@protected
+**/
+RESTSync._NON_ATTRS_CFG = ['url'];
+
 RESTSync.prototype = {
 
     // *** Public Properties *** //
