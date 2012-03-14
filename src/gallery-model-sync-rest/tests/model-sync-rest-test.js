@@ -177,6 +177,13 @@ suite.add(new Y.Test.Case({
 
         model.root = '/model/';
         Assert.areSame('/model/123/', model.url());
+    },
+    'url() should return a URL determined from the sync action' : function () {
+        var model = new this.TestModel({ id: 123 });
+
+        model.url = function(action) { return '/model/' + action; };
+
+        Assert.areSame('/model/read', model._getURL('read'));
     }
 }));
 
