@@ -1,7 +1,7 @@
 {
     "project": {
-        "name": "Async",
-        "description": "\"Synchronous programming is disrespectful and should not be employed in applications which are used by people.\" - Douglas Crockford"
+        "name": "YUI 3 Gallery",
+        "description": "YUI3 Gallery Modules"
     },
     "files": {
         "gallery-model-sync-rest/js/model-sync-rest.js": {
