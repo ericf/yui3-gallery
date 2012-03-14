@@ -30,18 +30,29 @@ time, you will not be able to `save()` data to YQL.
 @extensionfor Model ModelList
 **/
 
-var YQLSync,
+var Lang = Y.Lang,
 
-    Lang       = Y.Lang,
     sub        = Lang.sub,
     isValue    = Lang.isValue,
     isFunction = Lang.isFunction,
 
-    noop       = function () {};
+    noop = function () {};
 
-// *** YQLSYnc *** //
+// -- YQLSYnc ------------------------------------------------------------------
 
-YQLSync = function () {};
+function YQLSync() {}
+
+/**
+Properties that shouldn't be turned into ad-hoc attributes when passed to a
+Model or ModelList constructor.
+
+@property _NON_ATTRS_CFG
+@type Array
+@default ['query']
+@static
+@protected
+**/
+YQLSync._NON_ATTRS_CFG = ['query'];
 
 YQLSync.prototype = {
 
