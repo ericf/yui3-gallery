@@ -1,7 +1,7 @@
 {
     "project": {
-        "name": "YUI 3 Gallery",
-        "description": "YUI3 Gallery Modules"
+        "name": "Async",
+        "description": "\"Synchronous programming is disrespectful and should not be employed in applications which are used by people.\" - Douglas Crockford"
     },
     "files": {
         "gallery-model-sync-rest/js/model-sync-rest.js": {
@@ -277,6 +277,21 @@
             ],
             "return": {
                 "description": "Joined URL.",
+                "type": "String"
+            },
+            "access": "protected",
+            "tagname": "",
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 395,
+            "description": "Serializes `this` model to be used as the HTTP request entity body. By\ndefault this model will be serialized to a JSON string via its `toJSON()`\nmethod.\n\nYou can override this method when the HTTP server expects a different\nrepresentation of this model's data that is different from the default JSON\nserialization.\n\n**Note:** A model's `toJSON()` method can also be overridden; if you just\nneed to modify which attributes are serialized to JSON, that's a better\nplace to start.",
+            "itemtype": "method",
+            "name": "_serialize",
+            "return": {
+                "description": "serialized HTTP request entity body",
                 "type": "String"
             },
             "access": "protected",

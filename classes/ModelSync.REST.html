@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ModelSync.REST - YUI 3 Gallery</title>
+    <title>ModelSync.REST - Async</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.4.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -16,7 +16,7 @@
             <h1><img src="..&#x2F;assets/css/logo.png"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: undefined</em>
+            <em>API Docs for: </em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,12 @@ var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {
                         
                             <li class="index-item method protected">
                                 <a href="#method__joinURL">_joinURL</a>
+
+                                
+                            </li>
+                        
+                            <li class="index-item method protected">
+                                <a href="#method__serialize">_serialize</a>
 
                                 
                             </li>
@@ -465,6 +471,87 @@ model._joinURL('/bar'); // =&gt; '/foo/bar'
 </code></pre>
             </div>
         </div>
+    
+</div>
+
+                
+                    <div id="method__serialize" class="method item protected">
+    <h3 class="name"><code>_serialize</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag protected">protected</span>
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files&#x2F;gallery-model-sync-rest_js_model-sync-rest.js.html#l395"><code>gallery-model-sync-rest&#x2F;js&#x2F;model-sync-rest.js:395</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Serializes <code>this</code> model to be used as the HTTP request entity body. By
+default this model will be serialized to a JSON string via its <code>toJSON()</code>
+method.</p>
+
+<p>You can override this method when the HTTP server expects a different
+representation of this model's data that is different from the default JSON
+serialization.</p>
+
+<p><strong>Note:</strong> A model's <code>toJSON()</code> method can also be overridden; if you just
+need to modify which attributes are serialized to JSON, that's a better
+place to start.</p>
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>:
+                    
+                    serialized HTTP request entity body
+                
+            </div>
+        </div>
+    
+
     
 </div>
 

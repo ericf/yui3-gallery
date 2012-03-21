@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>gallery-model-sync-rest&#x2F;js&#x2F;model-sync-rest.js - YUI 3 Gallery</title>
+    <title>gallery-model-sync-rest&#x2F;js&#x2F;model-sync-rest.js - Async</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.4.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -16,7 +16,7 @@
             <h1><img src="..&#x2F;assets/css/logo.png"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: undefined</em>
+            <em>API Docs for: </em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -365,7 +365,7 @@ RESTSync.prototype = {
 
         &#x2F;&#x2F; Prepare the content if we are sending data to the server.
         if (method === &#x27;POST&#x27; || method === &#x27;PUT&#x27;) {
-            entity = Y.JSON.stringify(this);
+            entity = this._serialize();
         } else {
             &#x2F;&#x2F; Remove header, no content is being sent.
             delete headers[&#x27;Content-Type&#x27;];
@@ -475,8 +475,28 @@ RESTSync.prototype = {
         return root &amp;&amp; root.charAt(root.length - 1) === &#x27;&#x2F;&#x27; ?
                 root + url :
                 root + &#x27;&#x2F;&#x27; + url;
-    }
+    },
 
+    &#x2F;**
+    Serializes &#x60;this&#x60; model to be used as the HTTP request entity body. By
+    default this model will be serialized to a JSON string via its &#x60;toJSON()&#x60;
+    method.
+
+    You can override this method when the HTTP server expects a different
+    representation of this model&#x27;s data that is different from the default JSON
+    serialization.
+
+    **Note:** A model&#x27;s &#x60;toJSON()&#x60; method can also be overridden; if you just
+    need to modify which attributes are serialized to JSON, that&#x27;s a better
+    place to start.
+
+    @method _serialize
+    @return {String} serialized HTTP request entity body
+    @protected
+    **&#x2F;
+    _serialize: function () {
+        return Y.JSON.stringify(this);
+    }
 };
 
 &#x2F;&#x2F; -- Namespace ----------------------------------------------------------------
