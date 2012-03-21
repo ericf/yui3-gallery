@@ -393,17 +393,23 @@ RESTSync.prototype = {
     },
 
     /**
-    Serialize `this` for transmission over the wire. By default this does
-    a JSON stringification of the object (using the `toJSON` method).
+    Serializes `this` model to be used as the HTTP request entity body. By
+    default this model will be serialized to a JSON string via its `toJSON()`
+    method.
 
-    If the backend expects a different format of the attributes than what
-    is saved, you can override this method.
+    You can override this method when the HTTP server expects a different
+    representation of this model's data that is different from the default JSON
+    serialization.
+
+    **Note:** A model's `toJSON()` method can also be overridden; if you just
+    need to modify which attributes are serialized to JSON, that's a better
+    place to start.
 
     @method _serialize
-    @return {String} serialized data
+    @return {String} serialized HTTP request entity body
     @protected
     **/
-    _serialize : function() {
+    _serialize: function () {
         return Y.JSON.stringify(this);
     }
 };
