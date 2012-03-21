@@ -261,7 +261,7 @@ RESTSync.prototype = {
     sync : function (action, options, callback) {
         options || (options = {});
 
-        var url     = this._getURL(),
+        var url     = this._getURL(action),
             method  = RESTSync.HTTP_METHODS[action],
             headers = Y.merge(RESTSync.HTTP_HEADERS, options.headers),
             timeout = options.timeout || RESTSync.HTTP_TIMEOUT,
@@ -269,7 +269,7 @@ RESTSync.prototype = {
 
         // Prepare the content if we are sending data to the server.
         if (method === 'POST' || method === 'PUT') {
-            entity = Y.JSON.stringify(this);
+            entity = this.encode();
         } else {
             // Remove header, no content is being sent.
             delete headers['Content-Type'];
@@ -316,15 +316,16 @@ RESTSync.prototype = {
     This method correctly handles variations of the `url` property/method.
 
     @method _getURL
+    @param {String} action Sync action to perform.
     @return {String} the URL for the XHR
     @protected
     **/
-    _getURL : function () {
+    _getURL : function (action) {
         var url = this.url,
             data;
 
         if (isFunction(url)) {
-            return this.url();
+            return this.url(action);
         }
 
         if (this instanceof Y.Model) {
@@ -375,8 +376,22 @@ RESTSync.prototype = {
         return root && root.charAt(root.length - 1) === '/' ?
                 root + url :
                 root + '/' + url;
-    }
+    },
 
+    /**
+    Serialize `this` for transmission over the wire. By default this does
+    a JSON stringification of the object (using the `toJSON` method).
+
+    If the backend expects a different format of the attributes than what
+    is saved, you can override this method.
+
+    @method _serialize
+    @return {String} serialized data
+    @protected
+    **/
+    _serialize : function() {
+        return Y.JSON.stringify(this);
+    }
 };
 
 // *** Namespace *** //
@@ -384,4 +399,4 @@ RESTSync.prototype = {
 Y.namespace('ModelSync').REST = RESTSync;
 
 
-}, 'gallery-2012.01.04-22-09' ,{requires:['model', 'model-list', 'io-base', 'json-stringify'], skinnable:false});
+}, '@VERSION@' ,{skinnable:false, requires:['model', 'model-list', 'io-base', 'json-stringify']});

@@ -184,7 +184,18 @@ suite.add(new Y.Test.Case({
         model.url = function(action) { return '/model/' + action; };
 
         Assert.areSame('/model/read', model._getURL('read'));
+    },
+    '_serialize() can modify the data' : function () {
+        var model = new this.TestModel({ id: 123 });
+
+        model._serialize = function() {
+          var data = this.toJSON();
+          return Y.JSON.stringify({ body: data });
+        };
+
+        Assert.areSame(Y.JSON.stringify({ body: { id: 123 } }), model._serialize());
     }
+
 }));
 
 Y.Test.Runner.add(suite);
