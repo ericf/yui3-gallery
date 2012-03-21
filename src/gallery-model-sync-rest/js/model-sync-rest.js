@@ -267,7 +267,7 @@ RESTSync.prototype = {
 
         // Prepare the content if we are sending data to the server.
         if (method === 'POST' || method === 'PUT') {
-            entity = this.encode();
+            entity = this._serialize();
         } else {
             // Remove header, no content is being sent.
             delete headers['Content-Type'];
