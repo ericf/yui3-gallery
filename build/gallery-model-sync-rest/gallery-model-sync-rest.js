@@ -421,4 +421,4 @@ RESTSync.prototype = {
 Y.namespace('ModelSync').REST = RESTSync;
 
 
-}, '@VERSION@' ,{skinnable:false, requires:['model', 'model-list', 'io-base', 'json-stringify']});
+}, 'gallery-2012.03.23-18-00' ,{requires:['model', 'model-list', 'io-base', 'json-stringify'], skinnable:false});
