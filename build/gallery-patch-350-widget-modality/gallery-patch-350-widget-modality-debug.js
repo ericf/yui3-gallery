@@ -45,4 +45,4 @@ Y.WidgetModality.prototype._bindUIModal = function () {
 };
 
 
-}, '@VERSION@' ,{skinnable:false, requires:['widget-modality']});
+}, 'gallery-2012.04.12-13-50' ,{requires:['widget-modality'], skinnable:false});
