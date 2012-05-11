@@ -222,11 +222,12 @@ RESTSync.prototype = {
         var root = this.root,
             url;
 
-        if (this instanceof Y.ModelList || this.isNew()) {
+        if (this._isYUIModelList || this.isNew()) {
             return root;
         }
 
         url = this.getAsURL('id');
+
         if (root && root.charAt(root.length - 1) === '/') {
             // Add trailing-slash because root has a trailing-slash.
             url += '/';
@@ -344,7 +345,7 @@ RESTSync.prototype = {
             return this.url(action);
         }
 
-        if (this instanceof Y.Model) {
+        if (this._isYUIModel) {
             data = {};
 
             Y.Object.each(this.toJSON(), function (v, k) {
