@@ -42,7 +42,7 @@ var Lang = Y.Lang,
 
 // -- RESTSync -----------------------------------------------------------------
 
- function RESTSync() {}
+function RESTSync() {}
 
 /**
 Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.
@@ -121,7 +121,7 @@ Model or ModelList constructor.
 @static
 @protected
 **/
-RESTSync._NON_ATTRS_CFG = ['url'];
+RESTSync._NON_ATTRS_CFG = ['root', 'url'];
 
 RESTSync.prototype = {
 
