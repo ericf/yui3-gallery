@@ -86,15 +86,17 @@ RESTSync.HTTP_HEADERS = {
 };
 
 /**
-Default number of milliseconds before the XHR will timeout/abort.
+The number of milliseconds before the XHR will timeout/abort. This defaults to
+30 seconds.
 
-This can be overridden on a per-request basis.
+**Note:** This can be overridden on a per-request basis. See `sync()` method.
 
 @property HTTP_TIMEOUT
 @type Number
+@default 30000
 @static
-@default undefined
 **/
+RESTSync.HTTP_TIMEOUT = 30000;
 
 /**
 Static flag to use the HTTP POST method instead of PUT or DELETE.
