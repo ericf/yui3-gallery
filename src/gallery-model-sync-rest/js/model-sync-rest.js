@@ -114,6 +114,33 @@ was overridden.
 RESTSync.EMULATE_HTTP = false;
 
 /**
+A request authenticity token to validate HTTP requests made by this extension
+with the server when the request results in changing persistent state. This
+allows you to protect your server from CSRF attacks.
+
+A CSRF token provided by the server can be embedded in the HTML document and
+assigned to `YUI.Env.CSRF_TOKEN` like this:
+
+    <script>
+        YUI.Env.CSRF_TOKEN = {{session.authenticityToken}};
+    </script>
+
+The above should come after YUI see file so that `YUI.Env` has been defined.
+
+**Note:** This can be overridden on a per-request basis. See `sync()` method.
+
+When a value for the CSRF token is provided, either statically or via `options`
+passed to the `save()` and `destroy()` methods, the applicable HTTP requests
+will have a `X-CSRF-Token` header added with the token value.
+
+@property CSRF_TOKEN
+@type String
+@default YUI.Env.CSRF_TOKEN
+@static
+**/
+RESTSync.CSRF_TOKEN = YUI.Env.CSRF_TOKEN;
+
+/**
 Properties that shouldn't be turned into ad-hoc attributes when passed to a
 Model or ModelList constructor.
 
@@ -259,7 +286,11 @@ RESTSync.prototype = {
       * **update**: Update an existing model.
       * **delete**: Delete an existing model.
 
-    @param {Object} [options] Sync options.
+    @param {Object} [options] Sync options:
+      @param {String} [options.csrfToken] The authenticity token used by the
+        server to verify the validity of this request and protected against CSRF
+        attacks. This overrides the default provided by the `CSRF_TOKEN` static
+        property.
       @param {Object} [options.headers] The HTTP headers to mix with the default
         headers specified by the `headers` property.
       @param {Number} [options.timeout] The number of milliseconds before the
@@ -275,10 +306,11 @@ RESTSync.prototype = {
     sync: function (action, options, callback) {
         options || (options = {});
 
-        var url     = this._getURL(action),
-            method  = RESTSync.HTTP_METHODS[action],
-            headers = Y.merge(RESTSync.HTTP_HEADERS, options.headers),
-            timeout = options.timeout || RESTSync.HTTP_TIMEOUT,
+        var url       = this._getURL(action),
+            method    = RESTSync.HTTP_METHODS[action],
+            headers   = Y.merge(RESTSync.HTTP_HEADERS, options.headers),
+            timeout   = options.timeout || RESTSync.HTTP_TIMEOUT,
+            csrfToken = options.csrfToken || RESTSync.CSRF_TOKEN,
             entity;
 
         // Prepare the content if we are sending data to the server.
@@ -297,6 +329,13 @@ RESTSync.prototype = {
             headers['X-HTTP-Method-Override'] = method;
             // Fall-back to using POST method type.
             method = 'POST';
+        }
+
+        // Add CSRF token to HTTP request headers if one is specified.
+        if (csrfToken &&
+                (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+
+            headers['X-CSRF-Token'] = csrfToken;
         }
 
         // Setup and send the XHR.
