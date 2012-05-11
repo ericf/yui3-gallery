@@ -16,10 +16,6 @@ when sub-classing ModelList.
 
     var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
         root: '/user'
-    }, {
-        ATTRS: {
-            name: {}
-        }
     });
 
     var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {
@@ -69,16 +65,16 @@ RESTSync.HTTP_METHODS = {
 Default headers used with all XHRs.
 
 These headers will be merged with any request-specific headers, and the request-
-specific headers will take presidence.
+specific headers will take precedence.
 
 @property HTTP_HEADERS
 @type Object
-@static
 @default
     {
         'Accept'      : 'application/json',
         'Content-Type': 'application/json'
     }
+@static
 **/
 RESTSync.HTTP_HEADERS = {
     'Accept'      : 'application/json',
@@ -103,8 +99,8 @@ Static flag to use the HTTP POST method instead of PUT or DELETE.
 
 If the server-side HTTP framework isn't RESTful, setting this flag to `true`
 will cause all PUT and DELETE requests to instead use the POST HTTP method, and
-add a X-HTTP-Method-Override HTTP header with the value of the method type which
-was overridden.
+add a `X-HTTP-Method-Override` HTTP header with the value of the method type
+which was overridden.
 
 @property EMULATE_HTTP
 @type Boolean
@@ -146,7 +142,7 @@ Model or ModelList constructor.
 
 @property _NON_ATTRS_CFG
 @type Array
-@default ['url']
+@default ['root', 'url']
 @static
 @protected
 **/
@@ -169,10 +165,6 @@ RESTSync.prototype = {
     @example
         var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
             root: '/user/'
-        }, {
-            ATTRS: {
-                name: {}
-            }
         });
 
         var myUser = new User({id: '123'});
@@ -227,10 +219,6 @@ RESTSync.prototype = {
         var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {
             root: '/users',
             url : '/user/{id}'
-        }, {
-            ATTRS: {
-                name: {}
-            }
         });
 
         var myUser = new User({id: '123'});
@@ -294,7 +282,8 @@ RESTSync.prototype = {
       @param {Object} [options.headers] The HTTP headers to mix with the default
         headers specified by the `headers` property.
       @param {Number} [options.timeout] The number of milliseconds before the
-        request will timeout and be aborted.
+        request will timeout and be aborted. This overrides the default provided
+        by the `HTTP_TIMEOUT` static property.
     @param {callback} [callback] Called when the sync operation finishes.
       @param {Error|null} callback.err If an error occurred, this parameter will
         contain the error. If the sync operation succeeded, _err_ will be
@@ -327,6 +316,7 @@ RESTSync.prototype = {
 
             // Pass along original method type in the headers.
             headers['X-HTTP-Method-Override'] = method;
+
             // Fall-back to using POST method type.
             method = 'POST';
         }
@@ -405,8 +395,8 @@ RESTSync.prototype = {
     Joins the `root` URL to the specified _url_, normalizing leading/trailing
     `/` characters.
 
-    Copied from YUI 3's `Y.Controller` Class: by Ryan Grove (Yahoo! Inc.)
-    https://github.com/yui/yui3/blob/master/src/app/js/controller.js
+    Copied from YUI 3's `Y.Router` Class: by Ryan Grove (Yahoo! Inc.)
+    http://yuilibrary.com/yui/docs/api/classes/Router.html#method__joinURL
 
     @example
         model.root = '/foo'
@@ -448,7 +438,7 @@ RESTSync.prototype = {
     place to start.
 
     @method _serialize
-    @return {String} serialized HTTP request entity body
+    @return {String} serialized HTTP request entity body.
     @protected
     **/
     _serialize: function () {
