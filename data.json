@@ -38,7 +38,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 1,
+            "line": 8,
             "description": "An Extension which provides a RESTful HTTP sync implementation that can be mixed\ninto a Model or ModelList subclass."
         },
         "gallery-model-sync-yql": {
@@ -51,7 +51,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "gallery-model-sync-yql/js/model-sync-yql.js",
-            "line": 1,
+            "line": 8,
             "description": "An Extension which provides a YQL sync implementation that can be mixed into a\nModel or ModelList subclass."
         }
     },
@@ -71,7 +71,7 @@
             "namespace": "",
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
             "line": 8,
-            "description": "An Extension which provides a RESTful HTTP sync implementation that can be mixed\ninto a Model or ModelList subclass.\n\nThis makes it trivial for your Model or ModelList subclasses communicate and\ntransmit JSON data via RESTful HTTP. In most cases you'll only need to provide a\nvalue for `root` when sub-classing Model, and only provide a value for `url`\nwhen sub-classing ModelList.\n\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/user'\n    }, {\n        ATTRS: {\n            name: {}\n        }\n    });\n\n    var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {\n        model: User,\n        url  : '/user'\n    });"
+            "description": "An Extension which provides a RESTful HTTP sync implementation that can be mixed\ninto a Model or ModelList subclass.\n\nThis makes it trivial for your Model or ModelList subclasses communicate and\ntransmit JSON data via RESTful HTTP. In most cases you'll only need to provide a\nvalue for `root` when sub-classing Model, and only provide a value for `url`\nwhen sub-classing ModelList.\n\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/user'\n    });\n\n    var Users = Y.Base.create('users', Y.ModelList, [Y.ModelSync.REST], {\n        model: User,\n        url  : '/user'\n    });"
         },
         "ModelSync.YQL": {
             "name": "ModelSync.YQL",
@@ -94,7 +94,7 @@
     "classitems": [
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 47,
+            "line": 43,
             "description": "Static hash lookup table of RESTful HTTP methods corresponding to CRUD actions.",
             "itemtype": "property",
             "name": "HTTP_METHODS",
@@ -106,32 +106,32 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 68,
-            "description": "Default headers used with all XHRs.\n\nThese headers will be merged with any request-specific headers, and the request-\nspecific headers will take presidence.",
+            "line": 64,
+            "description": "Default headers used with all XHRs.\n\nThese headers will be merged with any request-specific headers, and the request-\nspecific headers will take precedence.",
             "itemtype": "property",
             "name": "HTTP_HEADERS",
             "type": "Object",
-            "static": 1,
             "default": "{\n        'Accept'      : 'application/json',\n        'Content-Type': 'application/json'\n    }",
+            "static": 1,
             "class": "ModelSync.REST",
             "module": "gallery-model-sync-rest"
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 88,
-            "description": "Default number of milliseconds before the XHR will timeout/abort.\n\nThis can be overridden on a per-request basis.",
+            "line": 84,
+            "description": "The number of milliseconds before the XHR will timeout/abort. This defaults to\n30 seconds.\n\n**Note:** This can be overridden on a per-request basis. See `sync()` method.",
             "itemtype": "property",
             "name": "HTTP_TIMEOUT",
             "type": "Number",
+            "default": "30000",
             "static": 1,
-            "default": "undefined",
             "class": "ModelSync.REST",
             "module": "gallery-model-sync-rest"
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 99,
-            "description": "Static flag to use the HTTP POST method instead of PUT or DELETE.\n\nIf the server-side HTTP framework isn't RESTful, setting this flag to `true`\nwill cause all PUT and DELETE requests to instead use the POST HTTP method, and\nadd a X-HTTP-Method-Override HTTP header with the value of the method type which\nwas overridden.",
+            "line": 97,
+            "description": "Static flag to use the HTTP POST method instead of PUT or DELETE.\n\nIf the server-side HTTP framework isn't RESTful, setting this flag to `true`\nwill cause all PUT and DELETE requests to instead use the POST HTTP method, and\nadd a `X-HTTP-Method-Override` HTTP header with the value of the method type\nwhich was overridden.",
             "itemtype": "property",
             "name": "EMULATE_HTTP",
             "type": "Boolean",
@@ -142,12 +142,24 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 114,
+            "line": 112,
+            "description": "A request authenticity token to validate HTTP requests made by this extension\nwith the server when the request results in changing persistent state. This\nallows you to protect your server from CSRF attacks.\n\nA CSRF token provided by the server can be embedded in the HTML document and\nassigned to `YUI.Env.CSRF_TOKEN` like this:\n\n    <script>\n        YUI.Env.CSRF_TOKEN = {{session.authenticityToken}};\n    </script>\n\nThe above should come after YUI see file so that `YUI.Env` has been defined.\n\n**Note:** This can be overridden on a per-request basis. See `sync()` method.\n\nWhen a value for the CSRF token is provided, either statically or via `options`\npassed to the `save()` and `destroy()` methods, the applicable HTTP requests\nwill have a `X-CSRF-Token` header added with the token value.",
+            "itemtype": "property",
+            "name": "CSRF_TOKEN",
+            "type": "String",
+            "default": "YUI.Env.CSRF_TOKEN",
+            "static": 1,
+            "class": "ModelSync.REST",
+            "module": "gallery-model-sync-rest"
+        },
+        {
+            "file": "gallery-model-sync-rest/js/model-sync-rest.js",
+            "line": 139,
             "description": "Properties that shouldn't be turned into ad-hoc attributes when passed to a\nModel or ModelList constructor.",
             "itemtype": "property",
             "name": "_NON_ATTRS_CFG",
             "type": "Array",
-            "default": "['url']",
+            "default": "['root', 'url']",
             "static": 1,
             "access": "protected",
             "tagname": "",
@@ -156,10 +168,10 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 130,
+            "line": 155,
             "description": "A String which represents the root or collection part of the URL space which\nrelates to a Model or ModelList. Usually this value should be same for all\ninstances of a specific Model/ModelList type.\n\nWhen sub-classing Y.Model, most of the time you'll want to just override\nthis property, and let the URLs for the XHRs be generated by convention. If\nthe `root` String ends with a trailing-slash, XHR URLs will also end with a\n'/'; if the `root` does not end with a slash, neither will the XHR URLs.",
             "example": [
-                "\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/user/'\n    }, {\n        ATTRS: {\n            name: {}\n        }\n    });\n\n    var myUser = new User({id: '123'});\n    myUser.load(); // Will GET the User data from: /user/123/\n\n    var newUser = new User({name: 'Eric Ferraiuolo'});\n    newUser.save(); // Will POST the User data to: /user/\n\nWhen sub-classing Y.ModelList, usually you'll want to ignore configuring the\n`root` and instead just set the `url` to a String; but if you just specify a\nvalue for `root`, things will work correctly."
+                "\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/user/'\n    });\n\n    var myUser = new User({id: '123'});\n    myUser.load(); // Will GET the User data from: /user/123/\n\n    var newUser = new User({name: 'Eric Ferraiuolo'});\n    newUser.save(); // Will POST the User data to: /user/\n\nWhen sub-classing Y.ModelList, usually you'll want to ignore configuring the\n`root` and instead just set the `url` to a String; but if you just specify a\nvalue for `root`, things will work correctly."
             ],
             "itemtype": "property",
             "name": "root",
@@ -170,11 +182,11 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 165,
+            "line": 186,
             "description": "A Function or String which is used to generate or specify the URL for the\nXHRs. While, this property can be defined for each Model/ModelList instance,\nusually you'll want to use a Function or String-pattern instead.\n\nIf the `url` property is a Function, it should return the String that should\nbe used as the URL. The Function will be called before each request and will\nbe passed the sync `action` which is currently being performed.\n\nIf the `url` property is a String, it will be processed by `Y.Lang.sub()`;\nthis is useful when the URLs for a Model type match a specific pattern and\ncan use simple replacement tokens:",
             "example": [
                 "\n    '/user/{id}'\n\n**Note:** String substitution on the `url` property will only happen for\nY.Model subclasses, and only String and Number ATTR values will be\nsubstituted; do not expect something fancy to happen with Object, Array, or\nBoolean values; they will simply be ignored.\n\nWhen sub-classing Y.Model, you will probably be able to rely on the default\nimplementation of `url()` which works in conjunction with the `root`\nproperty and whether the Model instance is new or not (i.e. has an `id`). If\nthe `root` property ends with a trailing-slash, the generated URL for the\nspecific Model instance will also end with a trailing-slash.\n\nIf your URL-space has plural root or collection URLs, while the specific\nitem resources are under a singular name, e.g. /users (plural) and /user/123\n(singular); you'll probably want to configure the `root` and `url`\nproperties like this:",
-                "\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/users',\n        url : '/user/{id}'\n    }, {\n        ATTRS: {\n            name: {}\n        }\n    });\n\n    var myUser = new User({id: '123'});\n    myUser.load(); // Will GET the User data from: /user/123\n\n    var newUser = new User({name: 'Eric Ferraiuolo'});\n    newUser.save(); // Will POST the User data to: /users\n\nWhen sub-classing Y.ModelList, you probably just need to specify a simple\nString for the `url` property and leave `root` to be the default value."
+                "\n    var User = Y.Base.create('user', Y.Model, [Y.ModelSync.REST], {\n        root: '/users',\n        url : '/user/{id}'\n    });\n\n    var myUser = new User({id: '123'});\n    myUser.load(); // Will GET the User data from: /user/123\n\n    var newUser = new User({name: 'Eric Ferraiuolo'});\n    newUser.save(); // Will POST the User data to: /users\n\nWhen sub-classing Y.ModelList, you probably just need to specify a simple\nString for the `url` property and leave `root` to be the default value."
             ],
             "itemtype": "property",
             "name": "url",
@@ -184,7 +196,7 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 245,
+            "line": 263,
             "description": "Communicates with a RESTful HTTP server by sending and receiving JSON data\nvia XHRs.\n\nThis method is called internally by load(), save(), and destroy().",
             "itemtype": "method",
             "name": "sync",
@@ -196,10 +208,16 @@
                 },
                 {
                     "name": "options",
-                    "description": "Sync options.",
+                    "description": "Sync options:",
                     "type": "Object",
                     "optional": true,
                     "props": [
+                        {
+                            "name": "csrfToken",
+                            "description": "The authenticity token used by the\n    server to verify the validity of this request and protected against CSRF\n    attacks. This overrides the default provided by the `CSRF_TOKEN` static\n    property.",
+                            "type": "String",
+                            "optional": true
+                        },
                         {
                             "name": "headers",
                             "description": "The HTTP headers to mix with the default\n    headers specified by the `headers` property.",
@@ -208,7 +226,7 @@
                         },
                         {
                             "name": "timeout",
-                            "description": "The number of milliseconds before the\n    request will timeout and be aborted.",
+                            "description": "The number of milliseconds before the\n    request will timeout and be aborted. This overrides the default provided\n    by the `HTTP_TIMEOUT` static property.",
                             "type": "Number",
                             "optional": true
                         }
@@ -239,7 +257,7 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 327,
+            "line": 359,
             "description": "Helper method to return the URL to use when making the XHR to the server.\n\nThis method correctly handles variations of the `url` property/method.",
             "itemtype": "method",
             "name": "_getURL",
@@ -261,8 +279,8 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 362,
-            "description": "Joins the `root` URL to the specified _url_, normalizing leading/trailing\n`/` characters.\n\nCopied from YUI 3's `Y.Controller` Class: by Ryan Grove (Yahoo! Inc.)\nhttps://github.com/yui/yui3/blob/master/src/app/js/controller.js",
+            "line": 394,
+            "description": "Joins the `root` URL to the specified _url_, normalizing leading/trailing\n`/` characters.\n\nCopied from YUI 3's `Y.Router` Class: by Ryan Grove (Yahoo! Inc.)\nhttp://yuilibrary.com/yui/docs/api/classes/Router.html#method__joinURL",
             "example": [
                 "\n    model.root = '/foo'\n    model._joinURL('bar');  // => '/foo/bar'\n    model._joinURL('/bar'); // => '/foo/bar'\n\n    model.root = '/foo/'\n    model._joinURL('bar');  // => '/foo/bar'\n    model._joinURL('/bar'); // => '/foo/bar'"
             ],
@@ -286,12 +304,12 @@
         },
         {
             "file": "gallery-model-sync-rest/js/model-sync-rest.js",
-            "line": 395,
+            "line": 427,
             "description": "Serializes `this` model to be used as the HTTP request entity body. By\ndefault this model will be serialized to a JSON string via its `toJSON()`\nmethod.\n\nYou can override this method when the HTTP server expects a different\nrepresentation of this model's data that is different from the default JSON\nserialization.\n\n**Note:** A model's `toJSON()` method can also be overridden; if you just\nneed to modify which attributes are serialized to JSON, that's a better\nplace to start.",
             "itemtype": "method",
             "name": "_serialize",
             "return": {
-                "description": "serialized HTTP request entity body",
+                "description": "serialized HTTP request entity body.",
                 "type": "String"
             },
             "access": "protected",
